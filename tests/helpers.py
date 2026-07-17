@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
+
+import numpy as np
 
 CHAPTER_SEQUENCE = [
     "PROLOGUE",
@@ -135,3 +138,27 @@ def write_valid_acok_source(tmp_path: Path, *, words_per_chapter: int = 24) -> P
     path = tmp_path / "acok.txt"
     path.write_bytes(("\r\n".join(lines) + "\r\n").encode("ascii"))
     return path
+
+
+class FakeEncoder:
+    model_id = "test/fake-encoder"
+    revision = "frozen-test"
+    max_tokens = 512
+
+    def __init__(self, **_: object) -> None:
+        pass
+
+    def token_count(self, text: str) -> int:
+        return len(text.split()) + 2
+
+    @staticmethod
+    def _vector(text: str) -> np.ndarray:
+        digest = hashlib.sha256(text.encode()).digest()
+        vector = np.frombuffer(digest[:16], dtype=np.uint8).astype(np.float32) + 1.0
+        return vector / np.linalg.norm(vector)
+
+    def encode_passages(self, passages: list[str]) -> np.ndarray:
+        return np.stack([self._vector(passage) for passage in passages]).astype(np.float32)
+
+    def encode_queries(self, queries: list[str]) -> np.ndarray:
+        return np.stack([self._vector(query) for query in queries]).astype(np.float32)
