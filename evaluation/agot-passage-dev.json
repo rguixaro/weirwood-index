@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "corpus": {
+    "source_sha256": "45a523bfbf731520d7c256fd5777d35f8bbe518112bc26e275891f43993b4190",
+    "word_offsets": "zero-based, chapter-relative, end-exclusive"
+  },
+  "cases": [
+    {
+      "id": "half-remembered-01",
+      "query": "A ranger's sword breaks while he duels a silent creature in the frozen woods.",
+      "expected_passages": [{"chapter_id": "agot-001-prologue", "word_start": 3487, "word_end": 3528}],
+      "category": "half-remembered-scene",
+      "rationale": "Waymar Royce's sword shatters during his duel with an Other."
+    },
+    {
+      "id": "half-remembered-02",
+      "query": "A boy climbing an abandoned tower sees royal twins together and is pushed from the window.",
+      "expected_passages": [{"chapter_id": "agot-009-bran-2", "word_start": 3713, "word_end": 3754}],
+      "category": "half-remembered-scene",
+      "rationale": "Bran discovers Jaime and Cersei and is pushed from the tower."
+    },
+    {
+      "id": "half-remembered-03",
+      "query": "A clever visitor gives a newly disabled child plans for a special riding saddle.",
+      "expected_passages": [{"chapter_id": "agot-025-bran-4", "word_start": 2526, "word_end": 2567}],
+      "category": "half-remembered-scene",
+      "rationale": "Tyrion gives Bran a design for an adaptive saddle."
+    },
+    {
+      "id": "half-remembered-04",
+      "query": "A noblewoman recognizes a wanted dwarf at a crowded roadside inn and calls on her father's bannermen.",
+      "expected_passages": [{"chapter_id": "agot-029-catelyn-5", "word_start": 3514, "word_end": 3555}],
+      "category": "half-remembered-scene",
+      "rationale": "Catelyn identifies Tyrion and orders that he be seized."
+    },
+    {
+      "id": "half-remembered-05",
+      "query": "During a tournament, a dazzling young knight gives a flower to an infatuated highborn girl.",
+      "expected_passages": [{"chapter_id": "agot-030-sansa-2", "word_start": 1718, "word_end": 1759}],
+      "category": "half-remembered-scene",
+      "rationale": "Loras Tyrell presents Sansa with a rose during the Hand's tourney."
+    },
+    {
+      "id": "paraphrase-01",
+      "query": "The person who pronounces a death judgment should personally carry it out.",
+      "expected_passages": [{"chapter_id": "agot-002-bran-1", "word_start": 1284, "word_end": 1325}],
+      "category": "paraphrased-quotation",
+      "rationale": "Ned explains why the judge must perform the execution."
+    },
+    {
+      "id": "paraphrase-02",
+      "query": "A man excuses attempted murder as one of the sacrifices he makes for love.",
+      "expected_passages": [{"chapter_id": "agot-009-bran-2", "word_start": 3713, "word_end": 3754}],
+      "category": "paraphrased-quotation",
+      "rationale": "Jaime justifies pushing Bran as an act done for love."
+    },
+    {
+      "id": "paraphrase-03",
+      "query": "Embrace the insult others use against you and it can become protective armor.",
+      "expected_passages": [{"chapter_id": "agot-006-jon-1", "word_start": 3063, "word_end": 3104}],
+      "category": "paraphrased-quotation",
+      "rationale": "Tyrion advises Jon to turn an unwanted identity into armor."
+    },
+    {
+      "id": "paraphrase-04",
+      "query": "In hard times the isolated wolf perishes, but the pack can endure.",
+      "expected_passages": [{"chapter_id": "agot-023-arya-2", "word_start": 2944, "word_end": 2985}],
+      "category": "paraphrased-quotation",
+      "rationale": "Ned teaches Arya that the pack survives by staying together."
+    },
+    {
+      "id": "paraphrase-05",
+      "query": "The ruler enjoys the feast while his chief minister is left to clean up the consequences.",
+      "expected_passages": [{"chapter_id": "agot-005-eddard-1", "word_start": 3413, "word_end": 3454}],
+      "category": "paraphrased-quotation",
+      "rationale": "Robert contrasts the king's pleasures with the Hand's burdens."
+    },
+    {
+      "id": "situation-01",
+      "query": "A prisoner responds to demands for a confession by admitting comic childhood offenses, then asks for trial by combat.",
+      "expected_passages": [{"chapter_id": "agot-039-tyrion-5", "word_start": 4568, "word_end": 4609}],
+      "category": "narrative-situation",
+      "rationale": "Tyrion ends his false confession by demanding trial by combat."
+    },
+    {
+      "id": "situation-02",
+      "query": "A pregnant khaleesi must eat a raw stallion heart without vomiting while the gathered riders watch.",
+      "expected_passages": [{"chapter_id": "agot-047-daenerys-5", "word_start": 154, "word_end": 195}],
+      "category": "narrative-situation",
+      "rationale": "Daenerys consumes the stallion heart during a Dothraki ritual."
+    },
+    {
+      "id": "situation-03",
+      "query": "A young watchman burns an undead attacker that has entered the commander's chambers.",
+      "expected_passages": [{"chapter_id": "agot-053-jon-7", "word_start": 5990, "word_end": 6070}],
+      "category": "narrative-situation",
+      "rationale": "Jon confronts the reanimated attacker in Mormont's rooms."
+    },
+    {
+      "id": "situation-04",
+      "query": "An army gains passage across a fortified river bridge by negotiating a marriage alliance with its elderly lord.",
+      "expected_passages": [{"chapter_id": "agot-060-catelyn-9", "word_start": 4780, "word_end": 4920}],
+      "category": "narrative-situation",
+      "rationale": "Catelyn negotiates the Frey marriage terms needed to cross the Twins."
+    },
+    {
+      "id": "situation-05",
+      "query": "The Hand privately warns the queen to flee with her children before he reveals their parentage to the king.",
+      "expected_passages": [{"chapter_id": "agot-046-eddard-12", "word_start": 2954, "word_end": 3001}],
+      "category": "narrative-situation",
+      "rationale": "Ned gives Cersei a chance to escape before confronting Robert."
+    },
+    {
+      "id": "imagery-01",
+      "query": "A dead mother wolf has a broken stag antler lodged in her throat while her pups survive nearby.",
+      "expected_passages": [{"chapter_id": "agot-002-bran-1", "word_start": 2050, "word_end": 2095}],
+      "category": "imagery",
+      "rationale": "The Stark party finds the dead direwolf and stag antler."
+    },
+    {
+      "id": "imagery-02",
+      "query": "Molten gold becomes a fatal crown poured over a would-be dragon king.",
+      "expected_passages": [{"chapter_id": "agot-047-daenerys-5", "word_start": 4370, "word_end": 4414}],
+      "category": "imagery",
+      "rationale": "Drogo kills Viserys with a crown of heated gold."
+    },
+    {
+      "id": "imagery-03",
+      "query": "A crown of blue winter roses is placed in a young woman's lap during a tournament.",
+      "expected_passages": [{"chapter_id": "agot-059-eddard-15", "word_start": 1280, "word_end": 1360}],
+      "category": "imagery",
+      "rationale": "Ned remembers Rhaegar crowning Lyanna with blue winter roses."
+    },
+    {
+      "id": "imagery-04",
+      "query": "Pale figures move through the forest with armor that changes color like moonlit ice.",
+      "expected_passages": [{"chapter_id": "agot-001-prologue", "word_start": 2844, "word_end": 2885}],
+      "category": "imagery",
+      "rationale": "The Others' reflective armor is described in the prologue."
+    },
+    {
+      "id": "imagery-05",
+      "query": "Three ancient stone eggs are colored deep green, cream and gold, and smoky black and scarlet.",
+      "expected_passages": [{"chapter_id": "agot-012-daenerys-2", "word_start": 2091, "word_end": 2132}],
+      "category": "imagery",
+      "rationale": "Daenerys studies the colors of her wedding-gift dragon eggs."
+    },
+    {
+      "id": "name-free-01",
+      "query": "A child overhears a royal couple in a tower discussing the murder of the previous Hand and the risk of war.",
+      "expected_passages": [{"chapter_id": "agot-009-bran-2", "word_start": 2851, "word_end": 2892}],
+      "category": "name-free",
+      "rationale": "Bran hears the tower conversation about Jon Arryn and political danger."
+    },
+    {
+      "id": "name-free-02",
+      "query": "A lord investigating an old death finds the king's black-haired bastard working in a forge.",
+      "expected_passages": [{"chapter_id": "agot-028-eddard-6", "word_start": 3315, "word_end": 3356}],
+      "category": "name-free",
+      "rationale": "Ned identifies Gendry during his investigation."
+    },
+    {
+      "id": "name-free-03",
+      "query": "A drunken outsider barred from the royal family's feast meets a lonely dwarf in the courtyard.",
+      "expected_passages": [{"chapter_id": "agot-006-jon-1", "word_start": 2920, "word_end": 3120}],
+      "category": "name-free",
+      "rationale": "Jon and Tyrion meet outside the Winterfell feast."
+    },
+    {
+      "id": "name-free-04",
+      "query": "A captive leaving the mountains recruits dangerous clans by promising them weapons and control of a rich valley.",
+      "expected_passages": [{"chapter_id": "agot-043-tyrion-6", "word_start": 3500, "word_end": 3567}],
+      "category": "name-free",
+      "rationale": "Tyrion wins over the mountain clans with promises of weapons and the Vale."
+    },
+    {
+      "id": "name-free-05",
+      "query": "A sword teacher holds off armored guards so his young pupil can escape after her father is seized.",
+      "expected_passages": [{"chapter_id": "agot-051-arya-4", "word_start": 1578, "word_end": 1619}],
+      "category": "name-free",
+      "rationale": "Syrio confronts Meryn Trant and the guards while Arya escapes."
+    },
+    {
+      "id": "confusable-01",
+      "query": "A direwolf saves a bedridden boy and his mother from an assassin carrying a plain dagger.",
+      "expected_passages": [{"chapter_id": "agot-015-catelyn-3", "word_start": 1770, "word_end": 1970}],
+      "category": "confusable-scene",
+      "rationale": "Bran's wolf kills the attacker in Bran's bedchamber."
+    },
+    {
+      "id": "confusable-02",
+      "query": "Direwolves attack the wildlings who have taken a crippled boy hostage in the woods.",
+      "expected_passages": [{"chapter_id": "agot-038-bran-5", "word_start": 3547, "word_end": 3637}],
+      "category": "confusable-scene",
+      "rationale": "Summer and Grey Wind attack Bran's captors in the wolfswood."
+    },
+    {
+      "id": "confusable-03",
+      "query": "A widow steps into her husband's funeral fire and later emerges alive with three newborn dragons.",
+      "expected_passages": [{"chapter_id": "agot-073-daenerys-10", "word_start": 3353, "word_end": 3397}],
+      "category": "confusable-scene",
+      "rationale": "Daenerys survives the pyre and is found with the dragons."
+    },
+    {
+      "id": "confusable-04",
+      "query": "A disguised girl watches her father be executed from beside a statue while a recruiter restrains her.",
+      "expected_passages": [{"chapter_id": "agot-066-arya-5", "word_start": 4590, "word_end": 4981}],
+      "category": "confusable-scene",
+      "rationale": "Yoren restrains Arya and makes her look away from Ned's execution."
+    },
+    {
+      "id": "confusable-05",
+      "query": "A daughter kneels before the young king and publicly begs that her condemned father be shown mercy.",
+      "expected_passages": [{"chapter_id": "agot-058-sansa-5", "word_start": 3394, "word_end": 3421}],
+      "category": "confusable-scene",
+      "rationale": "Sansa asks Joffrey to spare Ned."
+    },
+    {
+      "id": "expanded-01",
+      "query": "A girl chasing cats beneath a castle secretly hears two foreign-looking men discuss the Hand and an approaching war.",
+      "expected_passages": [{"chapter_id": "agot-033-arya-3", "word_start": 2420, "word_end": 2580}],
+      "category": "name-free",
+      "rationale": "Arya overhears the disguised conspirators beneath the Red Keep."
+    },
+    {
+      "id": "expanded-02",
+      "query": "The master of coin promises support, then turns the City Watch against the Hand in the throne room.",
+      "expected_passages": [{"chapter_id": "agot-050-eddard-14", "word_start": 2185, "word_end": 2226}],
+      "category": "narrative-situation",
+      "rationale": "Littlefinger completes his betrayal of Ned."
+    },
+    {
+      "id": "expanded-03",
+      "query": "The Hand removes his badge and resigns rather than support the assassination of a pregnant girl overseas.",
+      "expected_passages": [{"chapter_id": "agot-034-eddard-8", "word_start": 1392, "word_end": 1433}],
+      "category": "narrative-situation",
+      "rationale": "Ned resigns after Robert orders Daenerys killed."
+    },
+    {
+      "id": "expanded-04",
+      "query": "A knight confronts the Hand in the street, kills his guards, and leaves him with a shattered leg.",
+      "expected_passages": [{"chapter_id": "agot-036-eddard-9", "word_start": 2120, "word_end": 2250}],
+      "category": "confusable-scene",
+      "rationale": "Jaime's confrontation leaves Ned injured."
+    },
+    {
+      "id": "expanded-05",
+      "query": "A sellsword defeats an armored knight while fighting as a dwarf's champion in a mountain castle.",
+      "expected_passages": [{"chapter_id": "agot-041-catelyn-7", "word_start": 3001, "word_end": 3044}],
+      "category": "narrative-situation",
+      "rationale": "Bronn fights Ser Vardis during Tyrion's trial."
+    },
+    {
+      "id": "expanded-06",
+      "query": "In a fever dream, a dying sister in a remote tower repeatedly asks her brother to keep a promise.",
+      "expected_passages": [{"chapter_id": "agot-040-eddard-10", "word_start": 501, "word_end": 542}],
+      "category": "half-remembered-scene",
+      "rationale": "Ned remembers Lyanna and his promise at the Tower of Joy."
+    },
+    {
+      "id": "expanded-07",
+      "query": "A falling boy dreams that a three-eyed crow orders him to fly before he wakes.",
+      "expected_passages": [{"chapter_id": "agot-018-bran-3", "word_start": 388, "word_end": 434}],
+      "category": "imagery",
+      "rationale": "Bran encounters the three-eyed crow in his coma dream."
+    },
+    {
+      "id": "expanded-08",
+      "query": "An overweight new recruit admits that he is a coward and is terrified of fighting.",
+      "expected_passages": [{"chapter_id": "agot-027-jon-4", "word_start": 1547, "word_end": 1588}],
+      "category": "name-free",
+      "rationale": "Samwell Tarly describes himself as a coward."
+    },
+    {
+      "id": "expanded-09",
+      "query": "A young lord shows the Hand an image of his sister and asks whether she resembles the Hand's dead sister.",
+      "expected_passages": [{"chapter_id": "agot-028-eddard-6", "word_start": 1730, "word_end": 1870}],
+      "category": "half-remembered-scene",
+      "rationale": "Renly asks Ned whether Margaery resembles Lyanna."
+    },
+    {
+      "id": "expanded-10",
+      "query": "A dying king signs a document naming his friend protector of the realm until the heir comes of age.",
+      "expected_passages": [{"chapter_id": "agot-048-eddard-13", "word_start": 1280, "word_end": 1324}],
+      "category": "narrative-situation",
+      "rationale": "Robert dictates the regency document to Ned."
+    },
+    {
+      "id": "expanded-11",
+      "query": "A frightened girl is pressured by the queen to write letters summoning her family to court.",
+      "expected_passages": [{"chapter_id": "agot-052-sansa-4", "word_start": 3548, "word_end": 3589}],
+      "category": "name-free",
+      "rationale": "Cersei has Sansa write to Robb and Catelyn after Ned's arrest."
+    },
+    {
+      "id": "expanded-12",
+      "query": "The Lord Commander gives a burned young watchman his ancestral Valyrian steel sword with a new pommel.",
+      "expected_passages": [{"chapter_id": "agot-061-jon-8", "word_start": 1070, "word_end": 1298}],
+      "category": "half-remembered-scene",
+      "rationale": "Mormont gives Jon Longclaw after the wight attack."
+    },
+    {
+      "id": "expanded-13",
+      "query": "A khaleesi stops her warriors from raping women after a village is conquered.",
+      "expected_passages": [{"chapter_id": "agot-062-daenerys-7", "word_start": 1008, "word_end": 1049}],
+      "category": "narrative-situation",
+      "rationale": "Daenerys claims the captive women to protect them."
+    },
+    {
+      "id": "expanded-14",
+      "query": "A wounded warlord can no longer stay on his horse and falls in front of his riders.",
+      "expected_passages": [{"chapter_id": "agot-065-daenerys-8", "word_start": 660, "word_end": 705}],
+      "category": "half-remembered-scene",
+      "rationale": "Drogo falls from his horse after his wound worsens."
+    },
+    {
+      "id": "expanded-15",
+      "query": "A cruel young king forces his betrothed to look at her father's severed head mounted above the city.",
+      "expected_passages": [{"chapter_id": "agot-068-sansa-6", "word_start": 2920, "word_end": 3040}],
+      "category": "confusable-scene",
+      "rationale": "Joffrey shows Sansa the heads on the battlements."
+    },
+    {
+      "id": "expanded-16",
+      "query": "A widow ends her incapacitated husband's life using a cushion before preparing his funeral fire.",
+      "expected_passages": [{"chapter_id": "agot-069-daenerys-9", "word_start": 4241, "word_end": 4250}],
+      "category": "narrative-situation",
+      "rationale": "Daenerys gives Drogo a final mercy."
+    },
+    {
+      "id": "expanded-17",
+      "query": "A dwarf leads mountain clans into battle at the Green Fork and is nearly trampled.",
+      "expected_passages": [{"chapter_id": "agot-063-tyrion-8", "word_start": 5040, "word_end": 5240}],
+      "category": "narrative-situation",
+      "rationale": "Tyrion fights alongside Shagga and the clans in the battle."
+    },
+    {
+      "id": "expanded-18",
+      "query": "A young watchman deserts after his father's death, but his friends catch him and persuade him to return.",
+      "expected_passages": [{"chapter_id": "agot-071-jon-9", "word_start": 2754, "word_end": 2803}],
+      "category": "narrative-situation",
+      "rationale": "Jon's friends bring his attempted desertion to an end."
+    },
+    {
+      "id": "expanded-19",
+      "query": "Northern lords reject the southern claimants and proclaim their young commander king in the north.",
+      "expected_passages": [{"chapter_id": "agot-072-catelyn-11", "word_start": 4486, "word_end": 4527}],
+      "category": "narrative-situation",
+      "rationale": "Robb is acclaimed King in the North."
+    },
+    {
+      "id": "expanded-20",
+      "query": "A fleeing girl kills a stableboy who tries to stop her from leaving the castle.",
+      "expected_passages": [{"chapter_id": "agot-051-arya-4", "word_start": 3040, "word_end": 3240}],
+      "category": "confusable-scene",
+      "rationale": "Arya kills the stableboy during her escape."
+    }
+  ]
+}
