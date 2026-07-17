@@ -1,0 +1,297 @@
+{
+  "schema_version": 2,
+  "name": "acok-passage-development-expansion",
+  "split": "development",
+  "status": "draft",
+  "corpus": {
+    "sources": [
+      {
+        "book_id": "acok",
+        "source_sha256": "f1af13b832024ae8417397335aa17c341ab2bb4b9607cb21903c9a3544e75566"
+      }
+    ],
+    "word_offsets": "zero-based, chapter-relative, end-exclusive"
+  },
+  "cases": [
+    {
+      "id": "acok-dev-hot-pie-fight",
+      "query": "A disguised highborn child bloodies a baker's orphan with a wooden practice sword after he tries to steal her real blade.",
+      "expected_passages": [{"chapter_id": "acok-002-arya-1", "word_start": 1379, "word_end": 1420, "relevance": 3}],
+      "category": "half-remembered-scene",
+      "rationale": "Arya breaks Hot Pie's nose while travelling north in disguise.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-burning-wagon-rescue",
+      "query": "A girl running from a burning holdfast throws an axe into a locked wagon so three dangerous prisoners can escape.",
+      "expected_passages": [{"chapter_id": "acok-015-arya-4", "word_start": 5427, "word_end": 5468, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Arya gives Jaqen, Rorge, and Biter the means to escape their burning cage.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-lommy-killed",
+      "query": "An injured boy asks an enemy soldier to carry him, and the soldier answers by driving a spear through his throat.",
+      "expected_passages": [{"chapter_id": "acok-020-arya-5", "word_start": 5939, "word_end": 5980, "relevance": 3}],
+      "category": "paraphrased-quotation",
+      "rationale": "Polliver kills Lommy after Lommy says that he must be carried.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-gendry-discovers-arya",
+      "query": "A young smith sees through a supposed recruit's disguise because she always goes into the woods alone to urinate.",
+      "expected_passages": [{"chapter_id": "acok-020-arya-5", "word_start": 2834, "word_end": 2875, "relevance": 3}],
+      "category": "name-free",
+      "rationale": "Gendry tells Arya that he knows she is a girl.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-janos-exiled",
+      "query": "The new chief minister removes the corrupt commander of the city watch by putting him on a ship bound for the Wall.",
+      "expected_passages": [{"chapter_id": "acok-009-tyrion-2", "word_start": 1770, "word_end": 1970, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Tyrion sends Janos Slynt into exile with the Night's Watch.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-pycelle-trap",
+      "query": "Three different marriage plans are leaked to three councillors so the acting Hand can identify which one informs the queen.",
+      "expected_passages": [{"chapter_id": "acok-026-tyrion-6", "word_start": 4088, "word_end": 4129, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Tyrion reveals that only Pycelle received the true Dornish proposal.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-dontos-godswood",
+      "query": "A drunken former knight tells a captive girl to meet him secretly beside the heart tree because nowhere else in the castle is safe.",
+      "expected_passages": [{"chapter_id": "acok-019-sansa-2", "word_start": 2201, "word_end": 2242, "relevance": 3}],
+      "category": "name-free",
+      "rationale": "Dontos establishes the godswood as the place for his meetings with Sansa.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-brienne-melee",
+      "query": "An unusually tall woman is the last rider mounted after defeating more than a hundred knights in a royal melee.",
+      "expected_passages": [{"chapter_id": "acok-023-catelyn-2", "word_start": 3409, "word_end": 3450, "relevance": 3}],
+      "category": "confusable-scene",
+      "rationale": "Brienne wins Renly's melee at Bitterbridge.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-myrcella-betrothal",
+      "query": "A young princess is publicly promised to the heir of Dorne as part of an alliance negotiated by her uncle.",
+      "expected_passages": [{"chapter_id": "acok-026-tyrion-6", "word_start": 1576, "word_end": 1617, "relevance": 3}],
+      "category": "confusable-scene",
+      "rationale": "The court announces Myrcella's betrothal to Trystane Martell.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-asha-revealed",
+      "query": "A returning heir learns that the woman he flirted with on the road is actually the sister he has not seen since childhood.",
+      "expected_passages": [{"chapter_id": "acok-025-theon-2", "word_start": 6192, "word_end": 6233, "relevance": 3}],
+      "category": "confusable-scene",
+      "rationale": "Balon identifies Asha after she has travelled with Theon under another name.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-meera-nets-summer",
+      "query": "A swamp lord's daughter uses a net and three-pronged spear while play-fighting a direwolf.",
+      "expected_passages": [{"chapter_id": "acok-029-bran-4", "word_start": 0, "word_end": 41, "relevance": 3}],
+      "category": "imagery",
+      "rationale": "Meera Reed demonstrates her net-fighting against Summer.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-green-dream-shapes",
+      "query": "A prophetic boy explains that his visions are always true even though their symbolic form can be misunderstood.",
+      "expected_passages": [{"chapter_id": "acok-036-bran-5", "word_start": 751, "word_end": 792, "relevance": 3}],
+      "category": "paraphrased-quotation",
+      "rationale": "Jojen distinguishes the truth of green dreams from their difficult interpretation.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-sea-at-winterfell",
+      "query": "A landlocked castle is swallowed by black waves and salt water in a boy's prophetic dream.",
+      "expected_passages": [{"chapter_id": "acok-036-bran-5", "word_start": 820, "word_end": 861, "relevance": 3}],
+      "category": "imagery",
+      "rationale": "Jojen describes the sea coming over Winterfell's walls.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-reek-green-dream",
+      "query": "In a green dream, a foul-smelling prisoner stands over two dead brothers and cuts the faces from them.",
+      "expected_passages": [{"chapter_id": "acok-036-bran-5", "word_start": 2445, "word_end": 2486, "relevance": 3}],
+      "category": "imagery",
+      "rationale": "Jojen foresees Reek's role in the apparent deaths of Bran and Rickon.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-renly-peach",
+      "query": "During failed peace talks, a younger king unnerves his grim brother by casually offering him a piece of fruit.",
+      "expected_passages": [{"chapter_id": "acok-032-catelyn-3", "word_start": 2583, "word_end": 2624, "relevance": 3}],
+      "category": "confusable-scene",
+      "rationale": "Renly produces and offers Stannis a peach during their parley.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-dragonglass-cache",
+      "query": "Brothers on an ancient hill uncover black glass weapons wrapped with an old horn beneath the snow.",
+      "expected_passages": [{"chapter_id": "acok-035-jon-4", "word_start": 3665, "word_end": 3706, "relevance": 3}],
+      "category": "half-remembered-scene",
+      "rationale": "Jon and Ghost find the buried dragonglass and warhorn at the Fist.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-lightbringer-pyre",
+      "query": "A claimant walks into a burning pyre of wooden gods and pulls a glowing ceremonial sword from the flames.",
+      "expected_passages": [{"chapter_id": "acok-011-davos-1", "word_start": 1370, "word_end": 1490, "relevance": 3}],
+      "category": "imagery",
+      "rationale": "Stannis draws the staged Lightbringer from the burning idols.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-davos-wife-seven-sons",
+      "query": "A priestess challenges a sailor's faith by saying that his wife, not a wooden goddess, gave him seven sons.",
+      "expected_passages": [{"chapter_id": "acok-011-davos-1", "word_start": 5971, "word_end": 6012, "relevance": 3}],
+      "category": "paraphrased-quotation",
+      "rationale": "Melisandre disputes Davos's claim that the Mother blessed his family.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-gilly-refused",
+      "query": "A pregnant daughter-wife begs a young watchman to take her away, but he says their dangerous expedition cannot protect her child.",
+      "expected_passages": [{"chapter_id": "acok-024-jon-3", "word_start": 5902, "word_end": 5943, "relevance": 3}],
+      "category": "name-free",
+      "rationale": "Jon refuses Gilly's request to escape with the ranging.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-ygritte-spared",
+      "query": "A young ranger raises his sword over a kneeling captive but cannot execute her and instead tells her to run.",
+      "expected_passages": [{"chapter_id": "acok-052-jon-6", "word_start": 4780, "word_end": 4820, "relevance": 3}],
+      "category": "half-remembered-scene",
+      "rationale": "Jon lowers Longclaw and releases Ygritte.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-tyrion-kicks-joffrey",
+      "query": "After a mob attack, an uncle loses his temper and kicks the young king until a white knight pulls him away.",
+      "expected_passages": [{"chapter_id": "acok-042-tyrion-9", "word_start": 3146, "word_end": 3187, "relevance": 3}],
+      "category": "confusable-scene",
+      "rationale": "Tyrion attacks Joffrey after the riot until Mandon Moore intervenes.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-sansa-stripped",
+      "query": "The king orders a guardsman to tear open his betrothed's dress after having her beaten for her brother's victory.",
+      "expected_passages": [{"chapter_id": "acok-033-sansa-3", "word_start": 931, "word_end": 972, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Boros Blount strips Sansa on Joffrey's order.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-hound-refuses-sortie",
+      "query": "Terrified by the wildfire outside the gate, a wounded warrior refuses both the king and his chief minister and abandons the battle.",
+      "expected_passages": [{"chapter_id": "acok-060-tyrion-13", "word_start": 1812, "word_end": 1853, "relevance": 3}],
+      "category": "name-free",
+      "rationale": "The Hound refuses Tyrion's order to lead another sortie into the fire.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-alayaya-bloody-kiss",
+      "query": "A wrongly accused young woman, bruised and bleeding because of a queen's threat, kisses the man whose real lover she protected.",
+      "expected_passages": [{"chapter_id": "acok-055-tyrion-12", "word_start": 2413, "word_end": 2454, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Alayaya kisses Tyrion after Cersei has her beaten as leverage.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-pod-saves-tyrion",
+      "query": "A quiet squire saves his wounded master by knocking a treacherous white knight from one ship into the river.",
+      "expected_passages": [{"chapter_id": "acok-062-tyrion-14", "word_start": 2920, "word_end": 3108, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Podrick Payne pushes Mandon Moore into the Blackwater before he can kill Tyrion.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-jaqen-farewell",
+      "query": "A man changes his face, gives a girl an iron coin, and teaches her a foreign phrase meaning that everyone must die.",
+      "expected_passages": [{"chapter_id": "acok-048-arya-9", "word_start": 5968, "word_end": 6009, "relevance": 3}],
+      "category": "paraphrased-quotation",
+      "rationale": "Jaqen says farewell to Arya and has her repeat valar morghulis.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-pureborn-refusal",
+      "query": "A displaced queen asks the hereditary rulers of a merchant city for ships and soldiers but receives only ceremonial courtesy.",
+      "expected_passages": [{"chapter_id": "acok-041-daenerys-3", "word_start": 420, "word_end": 620, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Daenerys pleads her case before Qarth's Pureborn.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-blue-flower-wall",
+      "query": "Inside a vision, a sweet-smelling blue flower grows from a crack in an enormous wall of ice.",
+      "expected_passages": [{"chapter_id": "acok-049-daenerys-4", "word_start": 3773, "word_end": 3814, "relevance": 3}],
+      "category": "imagery",
+      "rationale": "Daenerys sees the blue flower in the Wall during the House of the Undying visions.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-three-ships",
+      "query": "Two strangers sent by a wealthy cheesemonger offer a silver-haired queen three ships to return west.",
+      "expected_passages": [{"chapter_id": "acok-064-daenerys-5", "word_start": 4845, "word_end": 4886, "relevance": 3}],
+      "category": "name-free",
+      "rationale": "Belwas and Arstan reveal that Illyrio has hired ships for Daenerys.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-reek-skin-plan",
+      "query": "A prisoner advises a desperate prince to flay two children so their bodies can be passed off as missing heirs.",
+      "expected_passages": [{"chapter_id": "acok-051-theon-4", "word_start": 2268, "word_end": 2309, "relevance": 3}],
+      "category": "confusable-scene",
+      "rationale": "Reek suggests removing the faces during the search for Bran and Rickon.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-jaime-admits-push",
+      "query": "While imprisoned, a knight calmly admits to a boy's mother that he threw her son from a tower window.",
+      "expected_passages": [{"chapter_id": "acok-056-catelyn-7", "word_start": 3437, "word_end": 3478, "relevance": 3}],
+      "category": "confusable-scene",
+      "rationale": "Jaime tells Catelyn directly that he pushed Bran.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-arya-recruits-gendry",
+      "query": "Before escaping a haunted castle, a girl creeps into the smithy at night and wakes an apprentice sleeping beside two others.",
+      "expected_passages": [{"chapter_id": "acok-065-arya-10", "word_start": 4870, "word_end": 4911, "relevance": 3}],
+      "category": "half-remembered-scene",
+      "rationale": "Arya wakes Gendry to recruit him for her escape from Harrenhal.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-weese-dog",
+      "query": "A brutal steward is mysteriously killed when the spotted dog he raised tears open his throat in the castle yard.",
+      "expected_passages": [{"chapter_id": "acok-039-arya-8", "word_start": 3171, "word_end": 3212, "relevance": 3}],
+      "category": "narrative-situation",
+      "rationale": "Jaqen fulfils Arya's second death by making Weese's own dog kill him.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-esgred-was-better",
+      "query": "After discovering a flirtatious travelling companion was his sister, a prince tells her he preferred the false identity she used.",
+      "expected_passages": [{"chapter_id": "acok-025-theon-2", "word_start": 6684, "word_end": 6725, "relevance": 3}],
+      "category": "paraphrased-quotation",
+      "rationale": "Theon tells Asha that he liked her better as Esgred.",
+      "verification": {"status": "draft"}
+    },
+    {
+      "id": "acok-dev-dontos-kiss",
+      "query": "A drunken fool asks his little songbook heroine for a lucky kiss while claiming he will arrange her escape.",
+      "expected_passages": [{"chapter_id": "acok-053-sansa-4", "word_start": 1196, "word_end": 1237, "relevance": 3}],
+      "category": "paraphrased-quotation",
+      "rationale": "Dontos asks Sansa, whom he calls Jonquil, to kiss her Florian.",
+      "verification": {"status": "draft"}
+    }
+  ]
+}
