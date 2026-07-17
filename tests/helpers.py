@@ -162,3 +162,16 @@ class FakeEncoder:
 
     def encode_queries(self, queries: list[str]) -> np.ndarray:
         return np.stack([self._vector(query) for query in queries]).astype(np.float32)
+
+
+class FakeReranker:
+    model_id = "test/fake-reranker"
+    revision = "frozen-test"
+
+    def __init__(self, **_: object) -> None:
+        pass
+
+    def score(self, query: str, passages: list[str]) -> np.ndarray:
+        del query
+        # Deterministically reverse the semantic candidate order in tests.
+        return np.arange(len(passages), dtype=np.float32)
