@@ -1,0 +1,18 @@
+.venv/
+.cache/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# The book text and all derived passages must remain local.
+data/raw/
+data/indexes/
+
+# Model downloads and generated benchmark reports are local artifacts.
+models/
+evaluation/reports/
