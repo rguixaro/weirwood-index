@@ -1,0 +1,830 @@
+{
+  "schema_version": 2,
+  "name": "agot-acok-passage-acceptance-review",
+  "split": "acceptance",
+  "status": "draft",
+  "passage_matching": {
+    "strategy": "overlap",
+    "minimum_overlap_words": 20
+  },
+  "corpus": {
+    "sources": [
+      {
+        "book_id": "agot",
+        "source_sha256": "45a523bfbf731520d7c256fd5777d35f8bbe518112bc26e275891f43993b4190"
+      },
+      {
+        "book_id": "acok",
+        "source_sha256": "f1af13b832024ae8417397335aa17c341ab2bb4b9607cb21903c9a3544e75566"
+      }
+    ],
+    "word_offsets": "zero-based, chapter-relative, end-exclusive"
+  },
+  "cases": [
+    {
+      "id": "accept-agot-needle-gift",
+      "query": "Jon gives Arya Needle and says stick them with the pointy end",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-011-jon-2",
+          "word_start": 1702,
+          "word_end": 1743,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Jon gives Arya Needle and tells her to stick enemies with the pointy end.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-needle-gift",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-tyrion-slaps-prince",
+      "query": "Tyrion slaps Joffrey at Winterfell",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-010-tyrion-1",
+          "word_start": 711,
+          "word_end": 752,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Tyrion slaps Joffrey and threatens to hit him again before sending him to Bran.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-tyrion-slaps-prince",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-wolf-bites-prince",
+      "query": "Nymeria bites Joffrey after he threatens Arya",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-016-sansa-1",
+          "word_start": 4771,
+          "word_end": 4812,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Nymeria attacks Joffrey while he is threatening Arya.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-wolf-bites-prince",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-sword-in-river",
+      "query": "Arya throws Joffrey's sword in the river",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-016-sansa-1",
+          "word_start": 4925,
+          "word_end": 4966,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Arya throws Lion's Tooth into the Trident.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-sword-in-river",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-drive-wolf-away",
+      "query": "Arya throws rocks at Nymeria to make her leave",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-023-arya-2",
+          "word_start": 2650,
+          "word_end": 2691,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Arya tells Ned how she drove Nymeria away to save her.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-drive-wolf-away",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-lady-executed",
+      "query": "Ned kills Lady with Ice",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-017-eddard-3",
+          "word_start": 2069,
+          "word_end": 2110,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Ned looks into Lady's golden eyes immediately before killing her.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-lady-executed",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-lord-nurses-at-court",
+      "query": "Robert Arryn breastfeeding during the trial",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-035-catelyn-6",
+          "word_start": 7071,
+          "word_end": 7112,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Lysa breastfeeds Robert Arryn in front of Catelyn.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-lord-nurses-at-court",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-sky-cell-blue",
+      "query": "Tyrion in the sky cell where the blue is calling",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-039-tyrion-5",
+          "word_start": 814,
+          "word_end": 855,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Tyrion contemplates the open edge and warning in his Eyrie sky cell.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-sky-cell-blue",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-greatjon-fingers",
+      "query": "Grey Wind bites off Greatjon Umber's fingers",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-054-bran-6",
+          "word_start": 2651,
+          "word_end": 2692,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Grey Wind bites off two of Greatjon Umber's fingers when he challenges Robb.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-greatjon-fingers",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-steward-is-squire",
+      "query": "Mormont tells Jon a steward can also be a squire",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-071-jon-9",
+          "word_start": 4831,
+          "word_end": 4872,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Mormont confronts Jon after his attempted desertion and explains the steward assignment.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-steward-is-squire",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-wineseller-tastes-first",
+      "query": "Jorah makes the wineseller taste Daenerys's poisoned wine",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-055-daenerys-6",
+          "word_start": 2978,
+          "word_end": 3019,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Jorah makes the wineseller taste the poisoned wine intended for Daenerys.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-wineseller-tastes-first",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-wooden-horses-vow",
+      "query": "Drogo promises Dany he'll cross the sea on wooden horses",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-055-daenerys-6",
+          "word_start": 4226,
+          "word_end": 4267,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Drogo vows to sail west and invade the Seven Kingdoms.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-wooden-horses-vow",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-boar-wound",
+      "query": "Robert talks about the boar that killed him",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-048-eddard-13",
+          "word_start": 735,
+          "word_end": 776,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Ned sees Robert's fatal boar wound and hears how Robert killed the animal.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-boar-wound",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-barristan-dismissed",
+      "query": "Barristan's reaction when Joffrey dismisses him",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-058-sansa-5",
+          "word_start": 2181,
+          "word_end": 2222,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Barristan Selmy rejects his forced retirement from the Kingsguard.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-barristan-dismissed",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-disguised-dungeon-visit",
+      "query": "Varys visits Ned in prison disguised as a jailer",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-059-eddard-15",
+          "word_start": 1628,
+          "word_end": 1669,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Ned recognizes Varys beneath his gaoler disguise in the black cells.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-disguised-dungeon-visit",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-public-confession",
+      "query": "Ned publicly confesses to treason",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-066-arya-5",
+          "word_start": 3802,
+          "word_end": 3843,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Ned publicly confesses at the Great Sept before Joffrey orders his death.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-public-confession",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-death-pays-life",
+      "query": "only death can pay for life",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-065-daenerys-8",
+          "word_start": 3104,
+          "word_end": 3145,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Mirri Maz Duur explains the price of the blood magic intended to save Drogo.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-death-pays-life",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-agot-whispering-wood-ambush",
+      "query": "battle begins when the woods seem to breathe",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-064-catelyn-10",
+          "word_start": 1892,
+          "word_end": 1933,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Robb's concealed bowmen spring the ambush in the Whispering Wood.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-whispering-wood-ambush",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-agot-last-hero-story",
+      "query": "Old Nan story about the last hero's dog dying",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-025-bran-4",
+          "word_start": 1536,
+          "word_end": 1577,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Old Nan tells Bran how the last hero sought the children during the Long Night.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-last-hero-story",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-agot-heart-tree-vows",
+      "query": "Jon and Sam say their vows at the heart tree",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-049-jon-6",
+          "word_start": 2686,
+          "word_end": 2727,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Jon and Sam recite the Night's Watch oath before a heart tree.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-agot-heart-tree-vows",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-tickler-questions",
+      "query": "Tickler questions gold silver gems food Brotherhood",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-027-arya-6",
+          "word_start": 414,
+          "word_end": 455,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Arya listens as the Tickler repeatedly asks villagers where Beric Dondarrion is.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-tickler-questions",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-three-lives-debt",
+      "query": "Jaqen gives Arya three deaths",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-048-arya-9",
+          "word_start": 3335,
+          "word_end": 3376,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Jaqen explains the three-death debt created when Arya saved the prisoners.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-three-lives-debt",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-masked-seeker",
+      "query": "Quaithe masked woman comes looking for dragons",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-013-daenerys-1",
+          "word_start": 5549,
+          "word_end": 5590,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Quaithe introduces herself outside Vaes Tolorro and says the visitors seek dragons.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-masked-seeker",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-quaithe-directions",
+      "query": "go south to go north east to go west",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-041-daenerys-3",
+          "word_start": 3062,
+          "word_end": 3103,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Quaithe warns Daenerys to leave Qarth and gives her cryptic directions.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-quaithe-directions",
+      "query_style": "terse-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-feast-of-corpses",
+      "query": "dead king wolf head feast vision",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-049-daenerys-4",
+          "word_start": 1326,
+          "word_end": 1367,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Daenerys sees the Red Wedding vision in the House of the Undying.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-feast-of-corpses",
+      "query_style": "terse-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-promised-prince-vision",
+      "query": "Rhaegar says Aegon is the prince that was promised",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-064-daenerys-5",
+          "word_start": 1857,
+          "word_end": 1898,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Daenerys recounts her vision of Rhaegar naming Aegon the prince that was promised.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-promised-prince-vision",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-merchant-marriage",
+      "query": "Xaro offers Daenerys marriage instead of ships",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-041-daenerys-3",
+          "word_start": 1795,
+          "word_end": 1836,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Xaro proposes marriage when Daenerys asks him for ships.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-merchant-marriage",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-salt-blessing",
+      "query": "Aeron drowns Theon what is dead may never die",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-012-theon-1",
+          "word_start": 4128,
+          "word_end": 4169,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Aeron gives Theon the Drowned God's salt blessing on Pyke.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-salt-blessing",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-secret-winterfell-plan",
+      "query": "prince tells an old warrior his plan will be remembered in songs",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-038-theon-3",
+          "word_start": 2651,
+          "word_end": 2692,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Theon persuades Dagmer to help execute his unauthorized plan to seize Winterfell.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-secret-winterfell-plan",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-reek-revealed",
+      "query": "smelly servant reveals he swapped places with his master",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-067-theon-6",
+          "word_start": 4572,
+          "word_end": 4613,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Reek reveals himself as Ramsay Snow, the Bastard of Bolton.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-reek-revealed",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-qarth-arrival",
+      "query": "jeweled camels and horns welcome the dragon queen to a city",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-028-daenerys-2",
+          "word_start": 10,
+          "word_end": 51,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Daenerys arrives at Qarth and receives a ceremonial escort of camelry.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-qarth-arrival",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-dontos-made-fool",
+      "query": "Sansa saves a drunk knight by asking Joffrey to make him a fool",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-003-sansa-1",
+          "word_start": 2971,
+          "word_end": 3012,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Sansa persuades Joffrey to make Dontos his fool rather than kill him.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-dontos-made-fool",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-song-at-knifepoint",
+      "query": "Hound makes Sansa sing with a knife at her throat",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-063-sansa-7",
+          "word_start": 1916,
+          "word_end": 1957,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "The Hound makes Sansa sing the Mother's hymn during the Blackwater battle.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-song-at-knifepoint",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-queen-abandons-ballroom",
+      "query": "queen abandons the women during battle to find her son",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-063-sansa-7",
+          "word_start": 507,
+          "word_end": 548,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Cersei abandons the ballroom after ordering Joffrey brought inside Maegor's Holdfast.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-queen-abandons-ballroom",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-conflicting-vows",
+      "query": "Jaime talks about his different vows contradicting each other",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-056-catelyn-7",
+          "word_start": 4535,
+          "word_end": 4576,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Jaime explains to Catelyn that keeping one vow inevitably means forsaking another.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-conflicting-vows",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "accept-acok-winter-rose-song",
+      "query": "singer steals a lord's daughter with a blue winter rose",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-052-jon-6",
+          "word_start": 3236,
+          "word_end": 3277,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Ygritte begins telling Jon the story of Bael the Bard and the winter rose.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-winter-rose-song",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-wolf-sees-host",
+      "query": "white wolf sees giants on mammoths under a glacier",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-054-jon-7",
+          "word_start": 1627,
+          "word_end": 1668,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Jon's wolf dream reveals the wildling host gathered in the Frostfangs.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-wolf-sees-host",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-bran-named-warg",
+      "query": "knight is what you want warg is what you are",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-036-bran-5",
+          "word_start": 1318,
+          "word_end": 1359,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Jojen explicitly tells Bran that he is a warg.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-bran-named-warg",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-coin-distraction",
+      "query": "girl drops fake silver coin then kills guard when he picks it up",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-065-arya-10",
+          "word_start": 6447,
+          "word_end": 6488,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Arya uses Jaqen's coin to distract and kill the guard during her escape from Harrenhal.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-coin-distraction",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "accept-acok-first-whispered-death",
+      "query": "she whispers his name then he falls off the wall dead",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-031-arya-7",
+          "word_start": 4975,
+          "word_end": 5016,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Arya learns that Jaqen fulfilled her first named death by killing Chiswyck.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "accept-acok-first-whispered-death",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    }
+  ],
+  "provenance": {
+    "query_authoring": "synthetic-search-box",
+    "review_required": true,
+    "evaluation_policy": "do not evaluate until human-reviewed and sealed"
+  }
+}

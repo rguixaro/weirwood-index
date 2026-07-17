@@ -1,0 +1,1969 @@
+{
+  "schema_version": 2,
+  "name": "agot-acok-passage-representative-development-review",
+  "split": "development",
+  "status": "draft",
+  "provenance": {
+    "query_authoring": "synthetic-search-box",
+    "review_required": true,
+    "base_benchmarks": [
+      "agot-passage-dev.json",
+      "acok-passage-dev.json",
+      "acok-passage-dev-expansion.review.json"
+    ]
+  },
+  "passage_matching": {
+    "strategy": "overlap",
+    "minimum_overlap_words": 20
+  },
+  "corpus": {
+    "sources": [
+      {
+        "book_id": "agot",
+        "source_sha256": "45a523bfbf731520d7c256fd5777d35f8bbe518112bc26e275891f43993b4190"
+      },
+      {
+        "book_id": "acok",
+        "source_sha256": "f1af13b832024ae8417397335aa17c341ab2bb4b9607cb21903c9a3544e75566"
+      }
+    ],
+    "word_offsets": "zero-based, chapter-relative, end-exclusive"
+  },
+  "cases": [
+    {
+      "id": "representative-half-remembered-01",
+      "query": "Waymar Royce's sword breaks fighting an Other",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-001-prologue",
+          "word_start": 3487,
+          "word_end": 3528
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Waymar Royce's sword shatters during his duel with an Other.",
+      "scene_id": "half-remembered-01",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-half-remembered-02",
+      "query": "Jaime pushes Bran from the tower after Bran sees him with Cersei",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-009-bran-2",
+          "word_start": 3713,
+          "word_end": 3754
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Bran discovers Jaime and Cersei and is pushed from the tower.",
+      "scene_id": "bran-tower-push",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-half-remembered-03",
+      "query": "Tyrion gives Bran plans for a riding saddle",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-025-bran-4",
+          "word_start": 2526,
+          "word_end": 2567
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Tyrion gives Bran a design for an adaptive saddle.",
+      "scene_id": "half-remembered-03",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-half-remembered-04",
+      "query": "Catelyn arrests Tyrion at the inn",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-029-catelyn-5",
+          "word_start": 3514,
+          "word_end": 3555
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Catelyn identifies Tyrion and orders that he be seized.",
+      "scene_id": "half-remembered-04",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-half-remembered-05",
+      "query": "Loras gives Sansa a rose at the tourney",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-030-sansa-2",
+          "word_start": 1718,
+          "word_end": 1759
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Loras Tyrell presents Sansa with a rose during the Hand's tourney.",
+      "scene_id": "half-remembered-05",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-paraphrase-01",
+      "query": "Ned tells Bran the man who passes the sentence should swing the sword",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-002-bran-1",
+          "word_start": 1284,
+          "word_end": 1325
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Ned explains why the judge must perform the execution.",
+      "scene_id": "paraphrase-01",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-paraphrase-02",
+      "query": "Jaime says the things he does for love before pushing Bran",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-009-bran-2",
+          "word_start": 3713,
+          "word_end": 3754
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Jaime justifies pushing Bran as an act done for love.",
+      "scene_id": "bran-tower-push",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-paraphrase-03",
+      "query": "Tyrion tells Jon to wear bastard like armor",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-006-jon-1",
+          "word_start": 3063,
+          "word_end": 3104
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Tyrion advises Jon to turn an unwanted identity into armor.",
+      "scene_id": "paraphrase-03",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-paraphrase-04",
+      "query": "Ned tells Arya the lone wolf dies but the pack survives",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-023-arya-2",
+          "word_start": 2944,
+          "word_end": 2985
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Ned teaches Arya that the pack survives by staying together.",
+      "scene_id": "paraphrase-04",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-paraphrase-05",
+      "query": "Robert says the king eats and the Hand takes the shit",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-005-eddard-1",
+          "word_start": 3413,
+          "word_end": 3454
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Robert contrasts the king's pleasures with the Hand's burdens.",
+      "scene_id": "paraphrase-05",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-situation-01",
+      "query": "Tyrion confesses silly crimes and demands trial by combat",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-039-tyrion-5",
+          "word_start": 4568,
+          "word_end": 4609
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Tyrion ends his false confession by demanding trial by combat.",
+      "scene_id": "situation-01",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-situation-02",
+      "query": "Daenerys eats the horse heart",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-047-daenerys-5",
+          "word_start": 154,
+          "word_end": 195
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Daenerys consumes the stallion heart during a Dothraki ritual.",
+      "scene_id": "situation-02",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-situation-03",
+      "query": "Jon burns the wight in Mormont's room",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-053-jon-7",
+          "word_start": 5990,
+          "word_end": 6070
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Jon confronts the reanimated attacker in Mormont's rooms.",
+      "scene_id": "situation-03",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-situation-04",
+      "query": "Robb agrees to marry a Frey to cross the Twins",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-060-catelyn-9",
+          "word_start": 4780,
+          "word_end": 4920
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Catelyn negotiates the Frey marriage terms needed to cross the Twins.",
+      "scene_id": "situation-04",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-situation-05",
+      "query": "Ned warns Cersei to leave before he tells Robert about her children",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-046-eddard-12",
+          "word_start": 2954,
+          "word_end": 3001
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Ned gives Cersei a chance to escape before confronting Robert.",
+      "scene_id": "situation-05",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-imagery-01",
+      "query": "Ned finds the direwolf killed by a stag antler",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-002-bran-1",
+          "word_start": 2050,
+          "word_end": 2095
+        }
+      ],
+      "category": "imagery",
+      "rationale": "The Stark party finds the dead direwolf and stag antler.",
+      "scene_id": "imagery-01",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-imagery-02",
+      "query": "Drogo gives Viserys a crown of molten gold",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-047-daenerys-5",
+          "word_start": 4370,
+          "word_end": 4414
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Drogo kills Viserys with a crown of heated gold.",
+      "scene_id": "imagery-02",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-imagery-03",
+      "query": "Ned dreams of Lyanna's crown of blue winter roses",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-059-eddard-15",
+          "word_start": 1280,
+          "word_end": 1360
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Ned dreams of Rhaegar crowning Lyanna with blue winter roses.",
+      "scene_id": "imagery-03",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-imagery-04",
+      "query": "Waymar sees the Others wearing ice armor in the woods",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-001-prologue",
+          "word_start": 2844,
+          "word_end": 2885
+        }
+      ],
+      "category": "imagery",
+      "rationale": "The Others' reflective armor is described in the prologue.",
+      "scene_id": "imagery-04",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-imagery-05",
+      "query": "Daenerys is given three dragon eggs at her wedding",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-012-daenerys-2",
+          "word_start": 2091,
+          "word_end": 2132
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Daenerys studies the colors of her wedding-gift dragon eggs.",
+      "scene_id": "imagery-05",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-name-free-01",
+      "query": "Bran overhears Jaime and Cersei talking in the broken tower",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-009-bran-2",
+          "word_start": 2851,
+          "word_end": 2892
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Bran hears the tower conversation about Jon Arryn and political danger.",
+      "scene_id": "name-free-01",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-name-free-02",
+      "query": "Ned finds Robert's bastard Gendry at the forge",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-028-eddard-6",
+          "word_start": 3315,
+          "word_end": 3356
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Ned identifies Gendry during his investigation.",
+      "scene_id": "name-free-02",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-name-free-03",
+      "query": "Jon and Tyrion meet outside the Winterfell feast",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-006-jon-1",
+          "word_start": 2920,
+          "word_end": 3120
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Jon and Tyrion meet outside the Winterfell feast.",
+      "scene_id": "name-free-03",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-name-free-04",
+      "query": "Tyrion recruits the mountain clans on the way out of the Vale",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-043-tyrion-6",
+          "word_start": 3500,
+          "word_end": 3567
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Tyrion wins over the mountain clans with promises of weapons and the Vale.",
+      "scene_id": "name-free-04",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-name-free-05",
+      "query": "Syrio Forel fights the guards so Arya can escape",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-051-arya-4",
+          "word_start": 1578,
+          "word_end": 1619
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Syrio confronts Meryn Trant and the guards while Arya escapes.",
+      "scene_id": "name-free-05",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-confusable-01",
+      "query": "Summer saves Bran and Catelyn from the dagger assassin",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-015-catelyn-3",
+          "word_start": 1770,
+          "word_end": 1970
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Bran's wolf kills the attacker in Bran's bedchamber.",
+      "scene_id": "confusable-01",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-confusable-02",
+      "query": "Summer and Grey Wind attack the wildlings holding Bran",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-038-bran-5",
+          "word_start": 3547,
+          "word_end": 3637
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Summer and Grey Wind attack Bran's captors in the wolfswood.",
+      "scene_id": "confusable-02",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-confusable-03",
+      "query": "Daenerys walks into Drogo's funeral fire and hatches the dragons",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-073-daenerys-10",
+          "word_start": 3353,
+          "word_end": 3397
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Daenerys survives the pyre and is found with the dragons.",
+      "scene_id": "confusable-03",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-confusable-04",
+      "query": "Yoren stops Arya from watching Ned's execution",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-066-arya-5",
+          "word_start": 4590,
+          "word_end": 4981
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Yoren restrains Arya and makes her look away from Ned's execution.",
+      "scene_id": "confusable-04",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-confusable-05",
+      "query": "Sansa begs Joffrey to spare Ned",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-058-sansa-5",
+          "word_start": 3394,
+          "word_end": 3421
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Sansa asks Joffrey to spare Ned.",
+      "scene_id": "confusable-05",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-01",
+      "query": "Arya overhears Varys and Illyrio beneath the Red Keep",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-033-arya-3",
+          "word_start": 2420,
+          "word_end": 2580
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Arya overhears the disguised conspirators beneath the Red Keep.",
+      "scene_id": "expanded-01",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-02",
+      "query": "Littlefinger betrays Ned in the throne room",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-050-eddard-14",
+          "word_start": 2185,
+          "word_end": 2226
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Littlefinger completes his betrayal of Ned.",
+      "scene_id": "expanded-02",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-03",
+      "query": "Hand resigns over plan to kill a pregnant girl overseas",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-034-eddard-8",
+          "word_start": 1392,
+          "word_end": 1433
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Ned resigns after Robert orders Daenerys killed.",
+      "scene_id": "expanded-03",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-04",
+      "query": "Jaime attacks Ned and kills Jory",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-036-eddard-9",
+          "word_start": 2120,
+          "word_end": 2250
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Jaime's confrontation leaves Ned injured.",
+      "scene_id": "expanded-04",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-05",
+      "query": "Bronn fights for Tyrion in the trial by combat at the Eyrie",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-041-catelyn-7",
+          "word_start": 3001,
+          "word_end": 3044
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Bronn fights Ser Vardis during Tyrion's trial.",
+      "scene_id": "expanded-05",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-06",
+      "query": "dying sister asks her brother to keep a promise in a remote tower",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-040-eddard-10",
+          "word_start": 501,
+          "word_end": 542
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Ned remembers Lyanna and his promise at the Tower of Joy.",
+      "scene_id": "expanded-06",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-07",
+      "query": "three-eyed crow tells Bran to fly while he is falling",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-018-bran-3",
+          "word_start": 388,
+          "word_end": 434
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Bran encounters the three-eyed crow in his coma dream.",
+      "scene_id": "expanded-07",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-08",
+      "query": "fat new Night's Watch recruit calls himself a coward",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-027-jon-4",
+          "word_start": 1547,
+          "word_end": 1588
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Samwell Tarly describes himself as a coward.",
+      "scene_id": "expanded-08",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-09",
+      "query": "Renly shows Ned a picture of Margaery and asks if she looks like Lyanna",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-028-eddard-6",
+          "word_start": 1730,
+          "word_end": 1870
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Renly asks Ned whether Margaery resembles Lyanna.",
+      "scene_id": "expanded-09",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-10",
+      "query": "dying king names his friend Protector of the Realm",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-048-eddard-13",
+          "word_start": 1280,
+          "word_end": 1324
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Robert dictates the regency document to Ned.",
+      "scene_id": "expanded-10",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-11",
+      "query": "Cersei makes Sansa write letters to her family",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-052-sansa-4",
+          "word_start": 3548,
+          "word_end": 3589
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Cersei has Sansa write to Robb and Catelyn after Ned's arrest.",
+      "scene_id": "expanded-11",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-12",
+      "query": "Lord Commander gives his burned steward a Valyrian steel sword",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-061-jon-8",
+          "word_start": 1070,
+          "word_end": 1298
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Mormont gives Jon Longclaw after the wight attack.",
+      "scene_id": "expanded-12",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-13",
+      "query": "Daenerys protects village women from the Dothraki",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-062-daenerys-7",
+          "word_start": 1008,
+          "word_end": 1049
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Daenerys claims the captive women to protect them.",
+      "scene_id": "expanded-13",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-14",
+      "query": "wounded khal falls from his horse in front of his riders",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-065-daenerys-8",
+          "word_start": 660,
+          "word_end": 705
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Drogo falls from his horse after his wound worsens.",
+      "scene_id": "expanded-14",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-15",
+      "query": "Joffrey makes Sansa look at Ned's severed head",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-068-sansa-6",
+          "word_start": 2920,
+          "word_end": 3040
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Joffrey shows Sansa the heads on the battlements.",
+      "scene_id": "expanded-15",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-16",
+      "query": "khaleesi smothers her incapacitated husband before the funeral pyre",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-069-daenerys-9",
+          "word_start": 4241,
+          "word_end": 4250
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Daenerys gives Drogo a final mercy.",
+      "scene_id": "expanded-16",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-17",
+      "query": "Tyrion fights with the mountain clans at the Green Fork",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-063-tyrion-8",
+          "word_start": 5040,
+          "word_end": 5240
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Tyrion fights alongside Shagga and the clans in the battle.",
+      "scene_id": "expanded-17",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-18",
+      "query": "Jon's friends stop him from deserting the Night's Watch",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-071-jon-9",
+          "word_start": 2754,
+          "word_end": 2803
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Jon's friends bring his attempted desertion to an end.",
+      "scene_id": "expanded-18",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-19",
+      "query": "northern lords proclaim their young commander King in the North",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-072-catelyn-11",
+          "word_start": 4486,
+          "word_end": 4527
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Robb is acclaimed King in the North.",
+      "scene_id": "expanded-19",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-expanded-20",
+      "query": "Arya kills the stableboy while escaping the Red Keep",
+      "expected_passages": [
+        {
+          "chapter_id": "agot-051-arya-4",
+          "word_start": 3040,
+          "word_end": 3240
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Arya kills the stableboy during her escape.",
+      "scene_id": "expanded-20",
+      "query_style": "descriptive-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-prologue-poison",
+      "query": "Cressen poisons Melisandre but only he dies",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-001-prologue",
+          "word_start": 10108,
+          "word_end": 10149
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Cressen drinks from the poisoned cup after Melisandre survives it.",
+      "scene_id": "acok-prologue-poison",
+      "query_style": "terse-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-acting-hand",
+      "query": "Tyrion arrives in King's Landing as acting Hand",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-004-tyrion-1",
+          "word_start": 541,
+          "word_end": 582
+        }
+      ],
+      "category": "name-free",
+      "rationale": "The council accepts Tyrion as acting Hand in Tywin's place.",
+      "scene_id": "acok-acting-hand",
+      "query_style": "terse-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-city-of-bones",
+      "query": "Dany finds water in the abandoned white city",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-013-daenerys-1",
+          "word_start": 3221,
+          "word_end": 3266
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Daenerys's survivors settle temporarily in Vaes Tolorro.",
+      "scene_id": "acok-city-of-bones",
+      "query_style": "terse-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-renly-shadow",
+      "query": "Renly murdered by Stannis-shaped shadow",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-034-catelyn-4",
+          "word_start": 3480,
+          "word_end": 3521
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Catelyn and Brienne witness the shadow assassination of Renly.",
+      "scene_id": "acok-renly-shadow",
+      "query_style": "terse-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-shadow-birth",
+      "query": "Melisandre gives birth to shadow under Storm's End",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-043-davos-2",
+          "word_start": 6792,
+          "word_end": 6833
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Davos witnesses Melisandre produce the shadow beneath Storm's End.",
+      "scene_id": "acok-shadow-birth",
+      "query_style": "terse-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-third-name",
+      "query": "Arya names Jaqen as the third death",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-048-arya-9",
+          "word_start": 3564,
+          "word_end": 3605
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Arya uses Jaqen's own name to compel his help.",
+      "scene_id": "acok-third-name",
+      "query_style": "terse-search",
+      "name_usage": "named",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-weasel-soup",
+      "query": "Weasel Soup prisoners take Harrenhal",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-048-arya-9",
+          "word_start": 4951,
+          "word_end": 4997
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Arya's role in taking Harrenhal becomes known as the weasel soup.",
+      "scene_id": "acok-weasel-soup",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-undying-burn",
+      "query": "dragon burns the creepy old people in the vision tower",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-049-daenerys-4",
+          "word_start": 4167,
+          "word_end": 4208
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Drogon burns the Undying and enables Daenerys to escape.",
+      "scene_id": "acok-undying-burn",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-riot-rescue",
+      "query": "scarred guard saves girl during King's Landing riot",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-042-tyrion-9",
+          "word_start": 3480,
+          "word_end": 3560
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "The Hound rescues Sansa during the King's Landing riot.",
+      "scene_id": "acok-riot-rescue",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-false-princes",
+      "query": "miller's boys killed and shown as dead princes",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-057-theon-5",
+          "word_start": 3725,
+          "word_end": 3766
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Theon substitutes the miller's sons for Bran and Rickon.",
+      "scene_id": "acok-false-princes",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-davos-wildfire",
+      "query": "sailor loses sons in green wildfire river battle",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-059-davos-3",
+          "word_start": 5872,
+          "word_end": 5913
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Davos is separated from his sons during the wildfire catastrophe.",
+      "scene_id": "acok-davos-wildfire",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-raised-chain",
+      "query": "Blackwater chain raised behind invading fleet",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-060-tyrion-13",
+          "word_start": 642,
+          "word_end": 683
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Tyrion's chain traps Stannis's fleet on the Blackwater.",
+      "scene_id": "acok-raised-chain",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-halfhand-duel",
+      "query": "captured ranger kills commander in staged wildling duel",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-069-jon-8",
+          "word_start": 4045,
+          "word_end": 4086
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Jon kills Qhorin Halfhand as part of Qhorin's plan.",
+      "scene_id": "acok-halfhand-duel",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-crypt-survival",
+      "query": "supposedly dead princes hiding in Winterfell crypts",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-070-bran-7",
+          "word_start": 3812,
+          "word_end": 3853
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Bran explains the crypt hiding place to the dying maester.",
+      "scene_id": "acok-crypt-survival",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-winterfell-captured",
+      "query": "former ward captures Winterfell and its young princes",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-047-bran-6",
+          "word_start": 1627,
+          "word_end": 1668
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Theon announces that Winterfell and the Stark boys are in his power.",
+      "scene_id": "acok-winterfell-captured",
+      "query_style": "terse-search",
+      "name_usage": "name-free",
+      "verification": {
+        "status": "draft"
+      }
+    },
+    {
+      "id": "representative-acok-dev-hot-pie-fight",
+      "query": "Arya beats Hot Pie with wooden sword",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-002-arya-1",
+          "word_start": 1379,
+          "word_end": 1420,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Arya breaks Hot Pie's nose while travelling north in disguise.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-hot-pie-fight",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-burning-wagon-rescue",
+      "query": "Arya throws axe into burning prisoner wagon",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-015-arya-4",
+          "word_start": 5427,
+          "word_end": 5468,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Arya gives Jaqen, Rorge, and Biter the means to escape their burning cage.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-burning-wagon-rescue",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-lommy-killed",
+      "query": "Lommy asks to be carried and gets speared",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-020-arya-5",
+          "word_start": 5939,
+          "word_end": 5980,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Polliver kills Lommy after Lommy says that he must be carried.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-lommy-killed",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-gendry-discovers-arya",
+      "query": "Gendry figures out Arya is a girl",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-020-arya-5",
+          "word_start": 2834,
+          "word_end": 2875,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Gendry tells Arya that he knows she is a girl.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-gendry-discovers-arya",
+      "query_style": "terse-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-janos-exiled",
+      "query": "City Watch commander sent to the Wall by ship",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-009-tyrion-2",
+          "word_start": 1770,
+          "word_end": 1970,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Tyrion sends Janos Slynt into exile with the Night's Watch.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-janos-exiled",
+      "query_style": "terse-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-pycelle-trap",
+      "query": "Tyrion gives Pycelle, Varys and Littlefinger different marriage plans",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-026-tyrion-6",
+          "word_start": 4088,
+          "word_end": 4129,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Tyrion reveals that only Pycelle received the true Dornish proposal.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-pycelle-trap",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-dontos-godswood",
+      "query": "drunk former knight arranges secret meetings in the godswood",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-019-sansa-2",
+          "word_start": 2201,
+          "word_end": 2242,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Dontos establishes the godswood as the place for his meetings with Sansa.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-dontos-godswood",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-brienne-melee",
+      "query": "Brienne wins a huge melee and asks to join a king's guard",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-023-catelyn-2",
+          "word_start": 3409,
+          "word_end": 3450,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Brienne wins Renly's melee at Bitterbridge.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-brienne-melee",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-myrcella-betrothal",
+      "query": "little princess promised to the prince of Dorne",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-026-tyrion-6",
+          "word_start": 1576,
+          "word_end": 1617,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "The court announces Myrcella's betrothal to Trystane Martell.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-myrcella-betrothal",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-asha-revealed",
+      "query": "Theon discovers the woman he flirted with is Asha",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-025-theon-2",
+          "word_start": 6192,
+          "word_end": 6233,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Balon identifies Asha after she has travelled with Theon under another name.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-asha-revealed",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-meera-nets-summer",
+      "query": "girl with a net play-fights a direwolf",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-029-bran-4",
+          "word_start": 0,
+          "word_end": 41,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Meera Reed demonstrates her net-fighting against Summer.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-meera-nets-summer",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-green-dream-shapes",
+      "query": "boy says his green dreams always come true but symbolically",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-036-bran-5",
+          "word_start": 751,
+          "word_end": 792,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Jojen distinguishes the truth of green dreams from their difficult interpretation.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-green-dream-shapes",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-sea-at-winterfell",
+      "query": "prophetic dream where the sea floods a landlocked castle",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-036-bran-5",
+          "word_start": 820,
+          "word_end": 861,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Jojen describes the sea coming over Winterfell's walls.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-sea-at-winterfell",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-reek-green-dream",
+      "query": "smelly man cuts the faces off two dead boys in a green dream",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-036-bran-5",
+          "word_start": 2445,
+          "word_end": 2486,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Jojen foresees Reek's role in the apparent deaths of Bran and Rickon.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-reek-green-dream",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-renly-peach",
+      "query": "Renly offers Stannis a peach during their parley",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-032-catelyn-3",
+          "word_start": 2583,
+          "word_end": 2624,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Renly produces and offers Stannis a peach during their parley.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-renly-peach",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-dragonglass-cache",
+      "query": "Night's Watch finds black glass weapons buried in snow",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-035-jon-4",
+          "word_start": 3665,
+          "word_end": 3706,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Jon and Ghost find the buried dragonglass and warhorn at the Fist.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-dragonglass-cache",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-lightbringer-pyre",
+      "query": "king pulls a glowing sword from burning wooden gods",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-011-davos-1",
+          "word_start": 1370,
+          "word_end": 1490,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Stannis draws the staged Lightbringer from the burning idols.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-lightbringer-pyre",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-davos-wife-seven-sons",
+      "query": "red priestess says a sailor's wife gave him seven sons",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-011-davos-1",
+          "word_start": 5971,
+          "word_end": 6012,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Melisandre disputes Davos's claim that the Mother blessed his family.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-davos-wife-seven-sons",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-gilly-refused",
+      "query": "pregnant girl asks a young watchman to take her away from her father",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-024-jon-3",
+          "word_start": 5902,
+          "word_end": 5943,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Jon refuses Gilly's request to escape with the ranging.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-gilly-refused",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-ygritte-spared",
+      "query": "Jon cannot kill Ygritte while she is his prisoner",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-052-jon-6",
+          "word_start": 4780,
+          "word_end": 4820,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Jon lowers Longclaw and releases Ygritte.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-ygritte-spared",
+      "query_style": "descriptive-search",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-tyrion-kicks-joffrey",
+      "query": "uncle kicks the young king after a city riot",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-042-tyrion-9",
+          "word_start": 3146,
+          "word_end": 3187,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Tyrion attacks Joffrey after the riot until Mandon Moore intervenes.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-tyrion-kicks-joffrey",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-sansa-stripped",
+      "query": "king has his fianc\u00e9e beaten and her dress torn open",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-033-sansa-3",
+          "word_start": 931,
+          "word_end": 972,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Boros Blount strips Sansa on Joffrey's order.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-sansa-stripped",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-hound-refuses-sortie",
+      "query": "burned guard refuses to return to the wildfire battle",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-060-tyrion-13",
+          "word_start": 1812,
+          "word_end": 1853,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "The Hound refuses Tyrion's order to lead another sortie into the fire.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-hound-refuses-sortie",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-alayaya-bloody-kiss",
+      "query": "queen has a woman beaten believing she is the dwarf's lover",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-055-tyrion-12",
+          "word_start": 2413,
+          "word_end": 2454,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Alayaya kisses Tyrion after Cersei has her beaten as leverage.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-alayaya-bloody-kiss",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-pod-saves-tyrion",
+      "query": "quiet squire knocks a Kingsguard into the river to save his master",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-062-tyrion-14",
+          "word_start": 2920,
+          "word_end": 3108,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Podrick Payne pushes Mandon Moore into the Blackwater before he can kill Tyrion.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-pod-saves-tyrion",
+      "query_style": "descriptive-search",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-jaqen-farewell",
+      "query": "Jaqen coin valar morgulis",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-048-arya-9",
+          "word_start": 5968,
+          "word_end": 6009,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Jaqen says farewell to Arya and has her repeat valar morghulis.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-jaqen-farewell",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-pureborn-refusal",
+      "query": "Dany asks the Pureborn for ships n they basically say no",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-041-daenerys-3",
+          "word_start": 420,
+          "word_end": 620,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Daenerys pleads her case before Qarth's Pureborn.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-pureborn-refusal",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-blue-flower-wall",
+      "query": "blue flower growing out of the wall dream",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-049-daenerys-4",
+          "word_start": 3773,
+          "word_end": 3814,
+          "relevance": 3
+        }
+      ],
+      "category": "imagery",
+      "rationale": "Daenerys sees the blue flower in the Wall during the House of the Undying visions.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-blue-flower-wall",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-three-ships",
+      "query": "three ships from the fat cheesemonger for the dragon queen",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-064-daenerys-5",
+          "word_start": 4845,
+          "word_end": 4886,
+          "relevance": 3
+        }
+      ],
+      "category": "name-free",
+      "rationale": "Belwas and Arstan reveal that Illyrio has hired ships for Daenerys.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-three-ships",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-reek-skin-plan",
+      "query": "skin the kids so the bodies look like the missing princes",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-051-theon-4",
+          "word_start": 2268,
+          "word_end": 2309,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Reek suggests removing the faces during the search for Bran and Rickon.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-reek-skin-plan",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-jaime-admits-push",
+      "query": "Jaime basically admits yeah i threw your kid out the window",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-056-catelyn-7",
+          "word_start": 3437,
+          "word_end": 3478,
+          "relevance": 3
+        }
+      ],
+      "category": "confusable-scene",
+      "rationale": "Jaime tells Catelyn directly that he pushed Bran.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-jaime-admits-push",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "named"
+    },
+    {
+      "id": "representative-acok-dev-arya-recruits-gendry",
+      "query": "girl wakes the blacksmith before escaping that haunted castle",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-065-arya-10",
+          "word_start": 4870,
+          "word_end": 4911,
+          "relevance": 3
+        }
+      ],
+      "category": "half-remembered-scene",
+      "rationale": "Arya wakes Gendry to recruit him for her escape from Harrenhal.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-arya-recruits-gendry",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-weese-dog",
+      "query": "dog randomly kills the awful steward at harrenhall",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-039-arya-8",
+          "word_start": 3171,
+          "word_end": 3212,
+          "relevance": 3
+        }
+      ],
+      "category": "narrative-situation",
+      "rationale": "Jaqen fulfils Arya's second death by making Weese's own dog kill him.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-weese-dog",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-esgred-was-better",
+      "query": "guy tells his sister he liked her fake identity better",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-025-theon-2",
+          "word_start": 6684,
+          "word_end": 6725,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Theon tells Asha that he liked her better as Esgred.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-esgred-was-better",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    },
+    {
+      "id": "representative-acok-dev-dontos-kiss",
+      "query": "drunk fool asks little bird for lucky kiss",
+      "expected_passages": [
+        {
+          "chapter_id": "acok-053-sansa-4",
+          "word_start": 1196,
+          "word_end": 1237,
+          "relevance": 3
+        }
+      ],
+      "category": "paraphrased-quotation",
+      "rationale": "Dontos asks Sansa, whom he calls Jonquil, to kiss her Florian.",
+      "verification": {
+        "status": "draft"
+      },
+      "scene_id": "acok-dev-dontos-kiss",
+      "query_style": "quotation-or-noisy",
+      "name_usage": "name-free"
+    }
+  ]
+}

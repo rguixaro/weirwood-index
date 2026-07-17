@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "corpus": {
+    "sources": [
+      {
+        "book_id": "acok",
+        "source_sha256": "f1af13b832024ae8417397335aa17c341ab2bb4b9607cb21903c9a3544e75566"
+      }
+    ],
+    "word_offsets": "zero-based, chapter-relative, end-exclusive"
+  },
+  "cases": [
+    {
+      "id": "acok-prologue-poison",
+      "query": "An elderly maester shares a poisoned cup with a red priestess, but only he dies.",
+      "expected_passages": [{"chapter_id": "acok-001-prologue", "word_start": 10108, "word_end": 10149}],
+      "category": "confusable-scene",
+      "rationale": "Cressen drinks from the poisoned cup after Melisandre survives it."
+    },
+    {
+      "id": "acok-acting-hand",
+      "query": "A dwarf arrives at court carrying his father's order that he serve temporarily as chief minister.",
+      "expected_passages": [{"chapter_id": "acok-004-tyrion-1", "word_start": 541, "word_end": 582}],
+      "category": "name-free",
+      "rationale": "The council accepts Tyrion as acting Hand in Tywin's place."
+    },
+    {
+      "id": "acok-city-of-bones",
+      "query": "The remnants of a queen's starving people discover fruit and water in an abandoned white city.",
+      "expected_passages": [{"chapter_id": "acok-013-daenerys-1", "word_start": 3221, "word_end": 3266}],
+      "category": "half-remembered-scene",
+      "rationale": "Daenerys's survivors settle temporarily in Vaes Tolorro."
+    },
+    {
+      "id": "acok-renly-shadow",
+      "query": "A crowned younger brother is killed in his tent by a shadow resembling his elder brother.",
+      "expected_passages": [{"chapter_id": "acok-034-catelyn-4", "word_start": 3480, "word_end": 3521}],
+      "category": "confusable-scene",
+      "rationale": "Catelyn and Brienne witness the shadow assassination of Renly."
+    },
+    {
+      "id": "acok-shadow-birth",
+      "query": "A smuggler rows a red priestess beneath a fortress and watches her give birth to a towering shadow.",
+      "expected_passages": [{"chapter_id": "acok-043-davos-2", "word_start": 6792, "word_end": 6833}],
+      "category": "imagery",
+      "rationale": "Davos witnesses Melisandre produce the shadow beneath Storm's End."
+    },
+    {
+      "id": "acok-third-name",
+      "query": "A captive girl names her magical assassin himself to force him to help free the northern prisoners.",
+      "expected_passages": [{"chapter_id": "acok-048-arya-9", "word_start": 3564, "word_end": 3605}],
+      "category": "narrative-situation",
+      "rationale": "Arya uses Jaqen's own name to compel his help."
+    },
+    {
+      "id": "acok-weasel-soup",
+      "query": "Prisoners seize a castle using kettles of hot broth in a plan later nicknamed after a small animal.",
+      "expected_passages": [{"chapter_id": "acok-048-arya-9", "word_start": 4951, "word_end": 4997}],
+      "category": "name-free",
+      "rationale": "Arya's role in taking Harrenhal becomes known as the weasel soup."
+    },
+    {
+      "id": "acok-undying-burn",
+      "query": "A young dragon burns the ancient figures surrounding his mother inside a vision-filled tower.",
+      "expected_passages": [{"chapter_id": "acok-049-daenerys-4", "word_start": 4167, "word_end": 4208}],
+      "category": "imagery",
+      "rationale": "Drogon burns the Undying and enables Daenerys to escape."
+    },
+    {
+      "id": "acok-riot-rescue",
+      "query": "During a city riot, a highborn girl is dragged from her horse before a scarred guard cuts through the mob to rescue her.",
+      "expected_passages": [{"chapter_id": "acok-042-tyrion-9", "word_start": 3480, "word_end": 3560}],
+      "category": "confusable-scene",
+      "rationale": "The Hound rescues Sansa during the King's Landing riot."
+    },
+    {
+      "id": "acok-false-princes",
+      "query": "Two miller's sons are killed and their tarred heads displayed as if they were missing princes.",
+      "expected_passages": [{"chapter_id": "acok-057-theon-5", "word_start": 3725, "word_end": 3766}],
+      "category": "confusable-scene",
+      "rationale": "Theon substitutes the miller's sons for Bran and Rickon."
+    },
+    {
+      "id": "acok-davos-wildfire",
+      "query": "A sailor is thrown into a burning river and cannot find his sons among ships destroyed by green fire.",
+      "expected_passages": [{"chapter_id": "acok-059-davos-3", "word_start": 5872, "word_end": 5913}],
+      "category": "narrative-situation",
+      "rationale": "Davos is separated from his sons during the wildfire catastrophe."
+    },
+    {
+      "id": "acok-raised-chain",
+      "query": "A huge harbor chain rises behind an invading fleet as hidden winches turn beneath the castle.",
+      "expected_passages": [{"chapter_id": "acok-060-tyrion-13", "word_start": 642, "word_end": 683}],
+      "category": "narrative-situation",
+      "rationale": "Tyrion's chain traps Stannis's fleet on the Blackwater."
+    },
+    {
+      "id": "acok-halfhand-duel",
+      "query": "A captured watchman kills his veteran commander in a staged fight meant to win the wildlings' trust.",
+      "expected_passages": [{"chapter_id": "acok-069-jon-8", "word_start": 4045, "word_end": 4086}],
+      "category": "half-remembered-scene",
+      "rationale": "Jon kills Qhorin Halfhand as part of Qhorin's plan."
+    },
+    {
+      "id": "acok-crypt-survival",
+      "query": "Two supposedly dead brothers reveal that they survived a castle's fall by hiding in their family's underground tombs.",
+      "expected_passages": [{"chapter_id": "acok-070-bran-7", "word_start": 3812, "word_end": 3853}],
+      "category": "confusable-scene",
+      "rationale": "Bran explains the crypt hiding place to the dying maester."
+    },
+    {
+      "id": "acok-winterfell-captured",
+      "query": "A former ward captures the castle where he was raised and declares its young heirs his prisoners.",
+      "expected_passages": [{"chapter_id": "acok-047-bran-6", "word_start": 1627, "word_end": 1668}],
+      "category": "narrative-situation",
+      "rationale": "Theon announces that Winterfell and the Stark boys are in his power."
+    }
+  ]
+}
