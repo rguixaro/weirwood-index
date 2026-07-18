@@ -9,6 +9,10 @@ class WeirwoodError(Exception):
     """Base class for actionable command failures."""
 
 
+class SearchValidationError(WeirwoodError):
+    """A search request contains a filter unsupported by the active index."""
+
+
 class CorpusValidationError(WeirwoodError):
     """The source corpus does not match the expected edition structure."""
 
