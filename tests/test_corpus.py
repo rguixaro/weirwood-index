@@ -7,7 +7,11 @@ import pytest
 from weirwood_index.corpus import EXPECTED_POV_COUNTS, parse_corpus
 from weirwood_index.models import CorpusValidationError
 
-from .helpers import write_valid_acok_source, write_valid_source
+from .helpers import (
+    write_valid_acok_source,
+    write_valid_epub_source,
+    write_valid_source,
+)
 
 
 def test_parser_cleans_and_validates_expected_structure(tmp_path) -> None:
@@ -67,3 +71,47 @@ def test_parser_combines_supported_books_and_excludes_appendix(tmp_path) -> None
     assert corpus.cleaning_counts["chapter_markers_removed"] == 69
     assert corpus.cleaning_counts["appendix_sections_removed"] == 1
     assert all("appendix material" not in chapter.text for chapter in corpus.chapters)
+
+
+def test_parser_preserves_epub_paragraphs_and_stable_offsets(tmp_path) -> None:
+    agot = write_valid_epub_source(tmp_path, book_id="agot")
+    acok = write_valid_epub_source(tmp_path, book_id="acok")
+
+    corpus = parse_corpus([acok, agot])
+
+    assert corpus.normalization_version == "asoiaf-epub-paragraphs-v1"
+    assert len(corpus.chapters) == 143
+    assert len(corpus.paragraphs) == 1430
+    assert all(source.source_format == "epub" for source in corpus.sources)
+    first = corpus.paragraphs[0]
+    second = corpus.paragraphs[1]
+    assert first.id == "agot-001-prologue-p0001"
+    assert first.word_start == 0
+    assert first.word_end == second.word_start == 5
+    assert corpus.chapters[0].text == "\n\n".join(
+        paragraph.text
+        for paragraph in corpus.paragraphs
+        if paragraph.chapter_id == corpus.chapters[0].id
+    )
+
+
+def test_parser_rejects_epub_with_collapsed_chapter_paragraphs(tmp_path) -> None:
+    source = write_valid_epub_source(
+        tmp_path,
+        book_id="agot",
+        collapsed_paragraphs=True,
+    )
+
+    with pytest.raises(CorpusValidationError, match="use a better EPUB source"):
+        parse_corpus(source)
+
+
+def test_parser_rejects_structurally_valid_but_incomplete_epub(tmp_path) -> None:
+    source = write_valid_epub_source(
+        tmp_path,
+        book_id="acok",
+        include_required_content=False,
+    )
+
+    with pytest.raises(CorpusValidationError, match="EPUB content appears incomplete"):
+        parse_corpus(source)

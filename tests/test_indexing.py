@@ -38,6 +38,10 @@ def test_build_writes_ordered_normalized_artifacts(tmp_path) -> None:
     assert loaded.context_embeddings is not None
     assert np.allclose(np.linalg.norm(loaded.context_embeddings, axis=1), 1.0)
     assert loaded.manifest["source"]["sha256"]
+    assert loaded.paragraphs
+    assert loaded.manifest["paragraphs"]["count"] == len(loaded.paragraphs)
+    assert loaded.paragraphs[0].word_start == 0
+    assert (built.path / "paragraphs.jsonl").is_file()
     assert not Path(loaded.manifest["source"]["path"]).is_absolute()
     assert loaded.manifest["chunk_profile"] == {
         "name": "short",
