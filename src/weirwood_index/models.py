@@ -9,6 +9,10 @@ class WeirwoodError(Exception):
     """Base class for actionable command failures."""
 
 
+class SearchValidationError(WeirwoodError):
+    """A search request contains a filter unsupported by the active index."""
+
+
 class CorpusValidationError(WeirwoodError):
     """The source corpus does not match the expected edition structure."""
 
@@ -19,6 +23,26 @@ class IndexValidationError(WeirwoodError):
 
 class BenchmarkValidationError(WeirwoodError):
     """A benchmark definition is malformed."""
+
+
+@dataclass(frozen=True)
+class Paragraph:
+    id: str
+    chapter_id: str
+    ordinal: int
+    word_start: int
+    word_end: int
+    text: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Paragraph:
+        try:
+            return cls(**data)
+        except (TypeError, KeyError) as exc:
+            raise IndexValidationError(f"invalid paragraph record: {exc}") from exc
 
 
 @dataclass(frozen=True)
@@ -45,6 +69,7 @@ class CorpusSource:
     book_sequence: int
     path: Path
     sha256: str
+    source_format: str = "txt"
 
 
 @dataclass(frozen=True)
@@ -55,6 +80,7 @@ class Corpus:
     cleaning_counts: dict[str, int]
     chapters: tuple[Chapter, ...]
     sources: tuple[CorpusSource, ...] = ()
+    paragraphs: tuple[Paragraph, ...] = ()
 
 
 @dataclass(frozen=True)

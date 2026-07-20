@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
+from collections.abc import Collection
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -10,7 +11,7 @@ from weirwood_index.embedding import Encoder
 from weirwood_index.events import load_event_parser, structured_event_scores
 from weirwood_index.indexing import LoadedIndex
 from weirwood_index.lexical import BM25Index, LexicalEvidenceScores, tokenize
-from weirwood_index.models import Chunk, WeirwoodError
+from weirwood_index.models import Chunk, SearchValidationError, WeirwoodError
 from weirwood_index.narrative import expand_narrative_query
 from weirwood_index.reranking import DEFAULT_RERANK_CANDIDATES, Reranker
 from weirwood_index.scenes import expand_scene_query
@@ -31,6 +32,7 @@ DEFAULT_EVENT_WEIGHT = 0.0
 DEFAULT_LEXICAL_EVIDENCE_WEIGHT = 0.0
 DEFAULT_RETENTION_MODE = "per-chapter"
 RRF_CONSTANT = 60
+PovFilter = str | Collection[str] | None
 QUOTATION_QUERY_TERMS = frozenset(
     {
         "asked",
@@ -95,6 +97,21 @@ class SearchRun:
     trace: RetrievalTrace
 
 
+@dataclass(frozen=True)
+class LexicalSearchPage:
+    results: list[SearchResult]
+    total_results: int
+    book_counts: dict[str, int]
+
+
+@dataclass(frozen=True)
+class LexicalRankingScores:
+    scores: np.ndarray
+    base: np.ndarray
+    evidence: LexicalEvidenceScores
+    exact_phrase: np.ndarray
+
+
 def bounded_excerpt(text: str, limit: int = 300) -> str:
     if len(text) <= limit:
         return text
@@ -114,14 +131,19 @@ def _validate_top(top: int) -> None:
         raise WeirwoodError("--top must be between 1 and 100")
 
 
-def _normalized_pov(index: LoadedIndex, pov: str | None) -> str | None:
+def _normalized_pov(index: LoadedIndex, pov: PovFilter) -> frozenset[str] | None:
     if pov is None:
         return None
-    normalized = pov.upper()
+    values = (pov,) if isinstance(pov, str) else pov
+    normalized = frozenset(value.upper() for value in values)
+    if not normalized:
+        raise SearchValidationError("POV filter must contain at least one value")
     available = {chunk.pov for chunk in index.chunks}
-    if normalized not in available:
-        raise WeirwoodError(
-            f"unknown POV {normalized!r}; choose one of: {', '.join(sorted(available))}"
+    unknown = normalized - available
+    if unknown:
+        raise SearchValidationError(
+            f"unknown POV {', '.join(sorted(unknown))!r}; choose one of: "
+            f"{', '.join(sorted(available))}"
         )
     return normalized
 
@@ -140,31 +162,23 @@ def _query_vector(index: LoadedIndex, query: str, encoder: Encoder) -> np.ndarra
 
 def _narrative_lexical_index(index: LoadedIndex) -> BM25Index:
     if not index.narrative_views:
-        raise WeirwoodError(
-            "narrative retrieval requires an index built with --narrative-views"
-        )
+        raise WeirwoodError("narrative retrieval requires an index built with --narrative-views")
     return BM25Index.from_texts([view.lexical_text for view in index.narrative_views])
 
 
 def _scene_lexical_index(index: LoadedIndex) -> BM25Index:
     if not index.scene_windows:
-        raise WeirwoodError(
-            "scene-window retrieval requires `weirwood index enrich-scenes` first"
-        )
+        raise WeirwoodError("scene-window retrieval requires `weirwood index enrich-scenes` first")
     return BM25Index.from_texts([window.lexical_text for window in index.scene_windows])
 
 
 def _event_lexical_index(index: LoadedIndex) -> BM25Index:
     if not index.event_records:
-        raise WeirwoodError(
-            "event retrieval requires `weirwood index enrich-events` first"
-        )
+        raise WeirwoodError("event retrieval requires `weirwood index enrich-events` first")
     return BM25Index.from_texts([record.lexical_text for record in index.event_records])
 
 
-def _scene_scores_for_chunks(
-    index: LoadedIndex, scene_scores: np.ndarray
-) -> np.ndarray:
+def _scene_scores_for_chunks(index: LoadedIndex, scene_scores: np.ndarray) -> np.ndarray:
     if scene_scores.shape != (len(index.scene_windows),):
         raise WeirwoodError("scene score count does not match the loaded scene windows")
     if len(index.chunk_scene_positions) != len(index.chunks):
@@ -186,18 +200,14 @@ def _event_scores_for_chunks(
     event_parser: Any | None,
 ) -> np.ndarray:
     if not index.event_records or len(index.chunk_event_positions) != len(index.chunks):
-        raise WeirwoodError(
-            "event retrieval requires `weirwood index enrich-events` first"
-        )
+        raise WeirwoodError("event retrieval requires `weirwood index enrich-events` first")
     event_lexical_index = event_lexical_index or _event_lexical_index(index)
     event_parser = event_parser or load_event_parser()
     lexical_scores = event_lexical_index.scores(query)
     lexical_maximum = float(np.max(lexical_scores, initial=0.0))
     if lexical_maximum > 0.0:
         lexical_scores = lexical_scores / lexical_maximum
-    structure_scores = structured_event_scores(
-        index.event_records, query, event_parser
-    )
+    structure_scores = structured_event_scores(index.event_records, query, event_parser)
     event_scores = 0.40 * lexical_scores + 0.60 * structure_scores
     return np.asarray(
         [
@@ -229,10 +239,69 @@ def _combined_lexical_scores(
         maximum = float(np.max(scores, initial=0.0))
         return scores / maximum if maximum > 0.0 else scores
 
-    return (
-        (1.0 - scene_lexical_weight) * normalize(passage_scores)
-        + scene_lexical_weight * normalize(scene_scores)
+    return (1.0 - scene_lexical_weight) * normalize(
+        passage_scores
+    ) + scene_lexical_weight * normalize(scene_scores)
+
+
+def _lexical_ranking_scores(
+    index: LoadedIndex,
+    query: str,
+    lexical_index: BM25Index,
+    *,
+    literal_query: str,
+    narrative: bool,
+    partial_evidence: bool,
+    scene_lexical_weight: float,
+    scene_lexical_index: BM25Index | None,
+) -> LexicalRankingScores:
+    base = _combined_lexical_scores(
+        index,
+        query,
+        lexical_index,
+        scene_lexical_weight=scene_lexical_weight,
+        scene_lexical_index=scene_lexical_index,
     )
+    signal_index = BM25Index.from_chunks(index.chunks) if narrative else lexical_index
+    evidence_positions = (
+        None
+        if partial_evidence
+        else signal_index.positions_containing_all(
+            literal_query, exclude_stopwords=True
+        )
+    )
+    evidence = signal_index.evidence_scores(
+        literal_query, positions=evidence_positions
+    )
+    exact_phrase = signal_index.exact_phrase_matches(literal_query)
+
+    maximum = float(np.max(base, initial=0.0))
+    normalized_base = base / maximum if maximum > 0.0 else base.copy()
+    scores = 0.25 * normalized_base
+
+    # Full term coverage with compact evidence is a stronger lexical signal than
+    # repeated isolated words. A complete normalized phrase is stronger still.
+    complete_compact = np.isclose(evidence.coverage, 1.0) & (evidence.proximity > 0.0)
+    scores[complete_compact] += (
+        1.0 + 0.50 * evidence.proximity[complete_compact] + 0.25 * evidence.phrase[complete_compact]
+    )
+    scores[exact_phrase] = 3.0 + 0.25 * normalized_base[exact_phrase]
+    return LexicalRankingScores(
+        scores=np.asarray(scores, dtype=np.float32),
+        base=base,
+        evidence=evidence,
+        exact_phrase=exact_phrase,
+    )
+
+
+def _promote_exact_phrase_scores(scores: np.ndarray, exact_phrase: np.ndarray) -> np.ndarray:
+    promoted = scores.copy()
+    eligible = exact_phrase & np.isfinite(promoted)
+    if eligible.any():
+        finite = promoted[np.isfinite(promoted)]
+        spread = float(finite.max() - finite.min()) if finite.size else 0.0
+        promoted[eligible] += max(1.0, spread + 1.0)
+    return promoted
 
 
 def _semantic_scores(
@@ -266,9 +335,7 @@ def _semantic_scores(
             raise WeirwoodError(
                 "scene-window retrieval requires `weirwood index enrich-scenes` first"
             )
-        scene_query_vector = _query_vector(
-            index, expand_scene_query(query), encoder
-        )
+        scene_query_vector = _query_vector(index, expand_scene_query(query), encoder)
         window_scores = index.scene_embeddings @ scene_query_vector
         scene_scores = _scene_scores_for_chunks(index, window_scores)
         raw_scores = raw_scores + scene_window_weight * np.maximum(
@@ -280,9 +347,7 @@ def _semantic_scores(
     if not narrative:
         raise WeirwoodError("--late-interaction requires --narrative")
     if index.narrative_embeddings is None or index.narrative_masks is None:
-        raise WeirwoodError(
-            "narrative retrieval requires an index built with --narrative-views"
-        )
+        raise WeirwoodError("narrative retrieval requires an index built with --narrative-views")
 
     query_terms = set(tokenize(query))
     quotation_query = bool(query_terms & QUOTATION_QUERY_TERMS) or '"' in query
@@ -318,9 +383,7 @@ def _semantic_scores(
             raise WeirwoodError(
                 "late interaction requires sentence embeddings in the narrative index"
             )
-        sentence_scores = np.einsum(
-            "nsd,d->ns", index.sentence_embeddings, query_vector
-        )
+        sentence_scores = np.einsum("nsd,d->ns", index.sentence_embeddings, query_vector)
         sentence_scores = np.where(index.sentence_mask, sentence_scores, -np.inf)
         max_sentence_scores = sentence_scores.max(axis=1)
         sentence_mask = index.sentence_mask.any(axis=1)
@@ -334,20 +397,17 @@ def _normalized_book(index: LoadedIndex, book: str | None) -> str | None:
     normalized = book.casefold()
     available = {chunk.book_id for chunk in index.chunks}
     if normalized not in available:
-        raise WeirwoodError(
+        raise SearchValidationError(
             f"unknown book {normalized!r}; choose one of: {', '.join(sorted(available))}"
         )
     return normalized
 
 
-def _eligible_positions(
-    index: LoadedIndex, pov: str | None, book: str | None = None
-) -> list[int]:
+def _eligible_positions(index: LoadedIndex, pov: PovFilter, book: str | None = None) -> list[int]:
     return [
         position
         for position, chunk in enumerate(index.chunks)
-        if (pov is None or chunk.pov == pov)
-        and (book is None or chunk.book_id == book)
+        if (pov is None or chunk.pov in pov) and (book is None or chunk.book_id == book)
     ]
 
 
@@ -393,30 +453,18 @@ def _select_non_overlapping_passages(
     return selected
 
 
-def _empty_lexical_evidence(document_count: int) -> LexicalEvidenceScores:
-    empty = np.zeros(document_count, dtype=np.float32)
-    return LexicalEvidenceScores(
-        score=empty,
-        coverage=empty.copy(),
-        proximity=empty.copy(),
-        phrase=empty.copy(),
-    )
-
-
-def _candidate_results(
+def _candidate_rows(
     index: LoadedIndex,
     scores: np.ndarray,
     *,
-    top: int,
-    pov: str | None,
+    pov: PovFilter,
     book: str | None = None,
     excluded_ids: set[str] | None = None,
     source_chunk: Chunk | None = None,
     positive_only: bool = False,
     deduplicate_chapters: bool = False,
-    retrieval_details: dict[int, dict[str, Any]] | None = None,
-) -> list[SearchResult]:
-    _validate_top(top)
+    limit: int | None = None,
+) -> list[tuple[int, Chunk, float]]:
     if scores.shape != (len(index.chunks),):
         raise WeirwoodError(
             f"score vector shape {scores.shape} does not match {len(index.chunks)} chunks"
@@ -429,6 +477,7 @@ def _candidate_results(
         positive_only=positive_only,
     )
     selected: list[tuple[int, Chunk, float]] = []
+    selected_by_chapter: defaultdict[str, list[Chunk]] = defaultdict(list)
     excluded_ids = excluded_ids or set()
     for position in order:
         score = float(scores[position])
@@ -445,20 +494,47 @@ def _candidate_results(
             adjacent = abs(chunk.chunk_ordinal - source_chunk.chunk_ordinal) <= 1
             if overlaps or adjacent or chunk.text == source_chunk.text:
                 continue
-        if deduplicate_chapters and any(
-            prior.chapter_id == chunk.chapter_id for _, prior, _ in selected
-        ):
+        chapter_selections = selected_by_chapter[chunk.chapter_id]
+        if deduplicate_chapters and chapter_selections:
             continue
         if any(
-            prior.chapter_id == chunk.chapter_id
-            and prior.word_start < chunk.word_end
+            prior.word_start < chunk.word_end
             and chunk.word_start < prior.word_end
-            for _, prior, _ in selected
+            for prior in chapter_selections
         ):
             continue
         selected.append((position, chunk, score))
-        if len(selected) == top:
+        chapter_selections.append(chunk)
+        if limit is not None and len(selected) == limit:
             break
+    return selected
+
+
+def _candidate_results(
+    index: LoadedIndex,
+    scores: np.ndarray,
+    *,
+    top: int,
+    pov: PovFilter,
+    book: str | None = None,
+    excluded_ids: set[str] | None = None,
+    source_chunk: Chunk | None = None,
+    positive_only: bool = False,
+    deduplicate_chapters: bool = False,
+    retrieval_details: dict[int, dict[str, Any]] | None = None,
+) -> list[SearchResult]:
+    _validate_top(top)
+    selected = _candidate_rows(
+        index,
+        scores,
+        pov=pov,
+        book=book,
+        excluded_ids=excluded_ids,
+        source_chunk=source_chunk,
+        positive_only=positive_only,
+        deduplicate_chapters=deduplicate_chapters,
+        limit=top,
+    )
     return [
         SearchResult(
             rank=rank,
@@ -476,7 +552,7 @@ def semantic_search(
     encoder: Encoder,
     *,
     top: int = 10,
-    pov: str | None = None,
+    pov: PovFilter = None,
     book: str | None = None,
     deduplicate_chapters: bool = False,
     reranker: Reranker | None = None,
@@ -527,7 +603,7 @@ def _reranked_semantic_results(
     reranker: Reranker,
     *,
     top: int,
-    pov: str | None,
+    pov: PovFilter,
     book: str | None,
     deduplicate_chapters: bool,
     rerank_candidates: int,
@@ -703,7 +779,7 @@ def lexical_search(
     query: str,
     *,
     top: int = 10,
-    pov: str | None = None,
+    pov: PovFilter = None,
     book: str | None = None,
     deduplicate_chapters: bool = False,
     lexical_index: BM25Index | None = None,
@@ -711,21 +787,56 @@ def lexical_search(
     scene_lexical_weight: float = DEFAULT_SCENE_LEXICAL_WEIGHT,
     scene_lexical_index: BM25Index | None = None,
 ) -> list[SearchResult]:
-    query = _normalize_query(query)
+    return lexical_search_page(
+        index,
+        query,
+        page=1,
+        page_size=top,
+        pov=pov,
+        book=book,
+        deduplicate_chapters=deduplicate_chapters,
+        lexical_index=lexical_index,
+        narrative=narrative,
+        scene_lexical_weight=scene_lexical_weight,
+        scene_lexical_index=scene_lexical_index,
+    ).results
+
+
+def lexical_search_page(
+    index: LoadedIndex,
+    query: str,
+    *,
+    page: int = 1,
+    page_size: int = 20,
+    pov: PovFilter = None,
+    book: str | None = None,
+    deduplicate_chapters: bool = False,
+    lexical_index: BM25Index | None = None,
+    narrative: bool = False,
+    scene_lexical_weight: float = DEFAULT_SCENE_LEXICAL_WEIGHT,
+    scene_lexical_index: BM25Index | None = None,
+) -> LexicalSearchPage:
+    if page < 1:
+        raise WeirwoodError("page must be positive")
+    _validate_top(page_size)
+    literal_query = _normalize_query(query)
+    query = literal_query
     if narrative:
         query = expand_narrative_query(query)
     lexical_index = lexical_index or (
-        _narrative_lexical_index(index)
-        if narrative
-        else BM25Index.from_chunks(index.chunks)
+        _narrative_lexical_index(index) if narrative else BM25Index.from_chunks(index.chunks)
     )
-    scores = _combined_lexical_scores(
+    lexical_ranking = _lexical_ranking_scores(
         index,
         query,
         lexical_index,
+        literal_query=literal_query,
+        narrative=narrative,
+        partial_evidence=False,
         scene_lexical_weight=scene_lexical_weight,
         scene_lexical_index=scene_lexical_index,
     )
+    scores = lexical_ranking.scores
     pov = _normalized_pov(index, pov)
     book = _normalized_book(index, book)
     order = _rank_positions(
@@ -738,18 +849,37 @@ def lexical_search(
             "mode": "lexical",
             "lexical_rank": rank,
             "lexical_score": float(scores[position]),
+            "base_lexical_score": float(lexical_ranking.base[position]),
+            "exact_phrase_match": bool(lexical_ranking.exact_phrase[position]),
+            "term_coverage_score": float(lexical_ranking.evidence.coverage[position]),
+            "term_proximity_score": float(lexical_ranking.evidence.proximity[position]),
+            "phrase_score": float(lexical_ranking.evidence.phrase[position]),
         }
         for rank, position in enumerate(order, 1)
     }
-    return _candidate_results(
+    selected = _candidate_rows(
         index,
         scores,
-        top=top,
         pov=pov,
         book=book,
         positive_only=True,
         deduplicate_chapters=deduplicate_chapters,
-        retrieval_details=details,
+    )
+    offset = (page - 1) * page_size
+    page_rows = selected[offset : offset + page_size]
+    results = [
+        SearchResult(
+            rank=offset + rank,
+            score=score,
+            chunk=chunk,
+            retrieval=details.get(position),
+        )
+        for rank, (position, chunk, score) in enumerate(page_rows, start=1)
+    ]
+    return LexicalSearchPage(
+        results=results,
+        total_results=len(selected),
+        book_counts=dict(Counter(chunk.book_id for _, chunk, _ in selected)),
     )
 
 
@@ -759,7 +889,7 @@ def hybrid_search(
     encoder: Encoder,
     *,
     top: int = 10,
-    pov: str | None = None,
+    pov: PovFilter = None,
     book: str | None = None,
     semantic_weight: float = 0.5,
     candidate_pool: int = DEFAULT_CANDIDATE_POOL,
@@ -776,7 +906,8 @@ def hybrid_search(
     event_lexical_index: BM25Index | None = None,
     event_parser: Any | None = None,
 ) -> list[SearchResult]:
-    query = _normalize_query(query)
+    literal_query = _normalize_query(query)
+    query = literal_query
     if narrative:
         query = expand_narrative_query(query)
     _validate_top(top)
@@ -802,20 +933,20 @@ def hybrid_search(
         scene_window_weight=scene_window_weight,
     )
     lexical_index = lexical_index or (
-        _narrative_lexical_index(index)
-        if narrative
-        else BM25Index.from_chunks(index.chunks)
+        _narrative_lexical_index(index) if narrative else BM25Index.from_chunks(index.chunks)
     )
-    lexical_scores = _combined_lexical_scores(
+    lexical_ranking = _lexical_ranking_scores(
         index,
         query,
         lexical_index,
+        literal_query=literal_query,
+        narrative=narrative,
+        partial_evidence=lexical_evidence_weight > 0.0,
         scene_lexical_weight=scene_lexical_weight,
         scene_lexical_index=scene_lexical_index,
     )
-    semantic_order = _rank_positions(
-        semantic_scores, eligible, limit=candidate_pool
-    )
+    lexical_scores = lexical_ranking.scores
+    semantic_order = _rank_positions(semantic_scores, eligible, limit=candidate_pool)
     lexical_order = _rank_positions(
         lexical_scores,
         eligible,
@@ -824,10 +955,9 @@ def hybrid_search(
     )
     semantic_ranks = {position: rank for rank, position in enumerate(semantic_order, 1)}
     lexical_ranks = {position: rank for rank, position in enumerate(lexical_order, 1)}
-    lexical_evidence = _empty_lexical_evidence(len(index.chunks))
+    lexical_evidence = lexical_ranking.evidence
     lexical_evidence_ranks: dict[int, int] = {}
     if lexical_evidence_weight:
-        lexical_evidence = lexical_index.evidence_scores(query, positions=eligible)
         lexical_evidence_order = _rank_positions(
             lexical_evidence.score,
             eligible,
@@ -835,8 +965,7 @@ def hybrid_search(
             positive_only=True,
         )
         lexical_evidence_ranks = {
-            position: rank
-            for rank, position in enumerate(lexical_evidence_order, 1)
+            position: rank for rank, position in enumerate(lexical_evidence_order, 1)
         }
     event_scores = None
     event_ranks: dict[int, int] = {}
@@ -850,9 +979,7 @@ def hybrid_search(
         event_order = _rank_positions(
             event_scores, eligible, limit=candidate_pool, positive_only=True
         )
-        event_ranks = {
-            position: rank for rank, position in enumerate(event_order, 1)
-        }
+        event_ranks = {position: rank for rank, position in enumerate(event_order, 1)}
 
     lexical_weight = 1.0 - semantic_weight
     fused_scores = np.full(len(index.chunks), -np.inf, dtype=np.float32)
@@ -873,9 +1000,7 @@ def hybrid_search(
             fused += lexical_weight / (RRF_CONSTANT + lexical_rank)
         lexical_evidence_rank = lexical_evidence_ranks.get(position)
         if lexical_evidence_rank is not None:
-            fused += lexical_evidence_weight / (
-                RRF_CONSTANT + lexical_evidence_rank
-            )
+            fused += lexical_evidence_weight / (RRF_CONSTANT + lexical_evidence_rank)
         event_rank = event_ranks.get(position)
         if event_rank is not None:
             fused += event_weight / (RRF_CONSTANT + event_rank)
@@ -888,6 +1013,8 @@ def hybrid_search(
             "lexical_weight": lexical_weight,
             "lexical_rank": lexical_rank,
             "lexical_score": float(lexical_scores[position]),
+            "base_lexical_score": float(lexical_ranking.base[position]),
+            "exact_phrase_match": bool(lexical_ranking.exact_phrase[position]),
             "lexical_evidence_weight": lexical_evidence_weight,
             "lexical_evidence_rank": lexical_evidence_rank,
             "lexical_evidence_score": float(lexical_evidence.score[position]),
@@ -896,10 +1023,10 @@ def hybrid_search(
             "phrase_score": float(lexical_evidence.phrase[position]),
             "event_weight": event_weight,
             "event_rank": event_rank,
-            "event_score": (
-                float(event_scores[position]) if event_scores is not None else None
-            ),
+            "event_score": (float(event_scores[position]) if event_scores is not None else None),
         }
+
+    fused_scores = _promote_exact_phrase_scores(fused_scores, lexical_ranking.exact_phrase)
 
     return _candidate_results(
         index,
@@ -918,7 +1045,7 @@ def hierarchical_hybrid_search(
     encoder: Encoder,
     *,
     top: int = 10,
-    pov: str | None = None,
+    pov: PovFilter = None,
     book: str | None = None,
     semantic_weight: float = 0.5,
     chapter_candidates: int = DEFAULT_CHAPTER_CANDIDATES,
@@ -983,7 +1110,7 @@ def hierarchical_hybrid_search_run(
     encoder: Encoder,
     *,
     top: int = 10,
-    pov: str | None = None,
+    pov: PovFilter = None,
     book: str | None = None,
     semantic_weight: float = 0.5,
     chapter_candidates: int = DEFAULT_CHAPTER_CANDIDATES,
@@ -1009,7 +1136,8 @@ def hierarchical_hybrid_search_run(
     event_lexical_index: BM25Index | None = None,
     event_parser: Any | None = None,
 ) -> SearchRun:
-    query = _normalize_query(query)
+    literal_query = _normalize_query(query)
+    query = literal_query
     if narrative:
         query = expand_narrative_query(query)
     _validate_top(top)
@@ -1020,9 +1148,7 @@ def hierarchical_hybrid_search_run(
     if not 0.0 <= lexical_evidence_weight <= 1.0:
         raise WeirwoodError("--lexical-evidence-weight must be between 0 and 1")
     if retention_mode not in RETENTION_MODES:
-        raise WeirwoodError(
-            f"--retention-mode must be one of: {', '.join(RETENTION_MODES)}"
-        )
+        raise WeirwoodError(f"--retention-mode must be one of: {', '.join(RETENTION_MODES)}")
     if not 1 <= chapter_candidates <= 100:
         raise WeirwoodError("--chapter-candidates must be between 1 and 100")
     if not 1 <= passages_per_chapter <= 20:
@@ -1055,20 +1181,20 @@ def hierarchical_hybrid_search_run(
         scene_window_weight=scene_window_weight,
     )
     lexical_index = lexical_index or (
-        _narrative_lexical_index(index)
-        if narrative
-        else BM25Index.from_chunks(index.chunks)
+        _narrative_lexical_index(index) if narrative else BM25Index.from_chunks(index.chunks)
     )
-    lexical_scores = _combined_lexical_scores(
+    lexical_ranking = _lexical_ranking_scores(
         index,
         query,
         lexical_index,
+        literal_query=literal_query,
+        narrative=narrative,
+        partial_evidence=lexical_evidence_weight > 0.0,
         scene_lexical_weight=scene_lexical_weight,
         scene_lexical_index=scene_lexical_index,
     )
-    semantic_order = _rank_positions(
-        semantic_scores, eligible, limit=passage_candidate_pool
-    )
+    lexical_scores = lexical_ranking.scores
+    semantic_order = _rank_positions(semantic_scores, eligible, limit=passage_candidate_pool)
     lexical_order = _rank_positions(
         lexical_scores,
         eligible,
@@ -1077,10 +1203,9 @@ def hierarchical_hybrid_search_run(
     )
     semantic_ranks = {position: rank for rank, position in enumerate(semantic_order, 1)}
     lexical_ranks = {position: rank for rank, position in enumerate(lexical_order, 1)}
-    lexical_evidence = _empty_lexical_evidence(len(index.chunks))
+    lexical_evidence = lexical_ranking.evidence
     lexical_evidence_ranks: dict[int, int] = {}
     if lexical_evidence_weight:
-        lexical_evidence = lexical_index.evidence_scores(query, positions=eligible)
         lexical_evidence_order = _rank_positions(
             lexical_evidence.score,
             eligible,
@@ -1088,8 +1213,7 @@ def hierarchical_hybrid_search_run(
             positive_only=True,
         )
         lexical_evidence_ranks = {
-            position: rank
-            for rank, position in enumerate(lexical_evidence_order, 1)
+            position: rank for rank, position in enumerate(lexical_evidence_order, 1)
         }
     event_scores = None
     event_ranks: dict[int, int] = {}
@@ -1106,9 +1230,7 @@ def hierarchical_hybrid_search_run(
             limit=passage_candidate_pool,
             positive_only=True,
         )
-        event_ranks = {
-            position: rank for rank, position in enumerate(event_order, 1)
-        }
+        event_ranks = {position: rank for rank, position in enumerate(event_order, 1)}
     lexical_weight = 1.0 - semantic_weight
 
     global_fused: dict[int, float] = {}
@@ -1125,9 +1247,7 @@ def hierarchical_hybrid_search_run(
         if position in lexical_ranks:
             score += lexical_weight / (RRF_CONSTANT + lexical_ranks[position])
         if position in lexical_evidence_ranks:
-            score += lexical_evidence_weight / (
-                RRF_CONSTANT + lexical_evidence_ranks[position]
-            )
+            score += lexical_evidence_weight / (RRF_CONSTANT + lexical_evidence_ranks[position])
         if position in event_ranks:
             score += event_weight / (RRF_CONSTANT + event_ranks[position])
         global_fused[position] = score
@@ -1140,31 +1260,30 @@ def hierarchical_hybrid_search_run(
         for chapter_id, scores in chapter_evidence.items()
     }
     chapter_sort_keys = {
-        chunk.chapter_id: (chunk.book_sequence, chunk.chapter_sequence)
-        for chunk in index.chunks
+        chunk.chapter_id: (chunk.book_sequence, chunk.chapter_sequence) for chunk in index.chunks
+    }
+    exact_phrase_chapters = {
+        index.chunks[position].chapter_id
+        for position in eligible
+        if lexical_ranking.exact_phrase[position]
     }
     chapter_order = tuple(
         sorted(
             chapter_scores,
             key=lambda chapter_id: (
+                chapter_id not in exact_phrase_chapters,
                 -chapter_scores[chapter_id],
                 *chapter_sort_keys[chapter_id],
             ),
         )
     )
     shortlisted = set(chapter_order[:chapter_candidates])
-    chapter_ranks = {
-        chapter_id: rank for rank, chapter_id in enumerate(chapter_order, start=1)
-    }
+    chapter_ranks = {chapter_id: rank for rank, chapter_id in enumerate(chapter_order, start=1)}
     passage_positions = [
-        position
-        for position in eligible
-        if index.chunks[position].chapter_id in shortlisted
+        position for position in eligible if index.chunks[position].chapter_id in shortlisted
     ]
     local_semantic_order = _rank_positions(semantic_scores, passage_positions)
-    local_lexical_order = _rank_positions(
-        lexical_scores, passage_positions, positive_only=True
-    )
+    local_lexical_order = _rank_positions(lexical_scores, passage_positions, positive_only=True)
     local_semantic_ranks = {
         position: rank for rank, position in enumerate(local_semantic_order, start=1)
     }
@@ -1175,17 +1294,13 @@ def hierarchical_hybrid_search_run(
         lexical_evidence.score, passage_positions, positive_only=True
     )
     local_lexical_evidence_ranks = {
-        position: rank
-        for rank, position in enumerate(local_lexical_evidence_order, start=1)
+        position: rank for rank, position in enumerate(local_lexical_evidence_order, start=1)
     }
     local_event_ranks: dict[int, int] = {}
     if event_scores is not None:
-        local_event_order = _rank_positions(
-            event_scores, passage_positions, positive_only=True
-        )
+        local_event_order = _rank_positions(event_scores, passage_positions, positive_only=True)
         local_event_ranks = {
-            position: rank
-            for rank, position in enumerate(local_event_order, start=1)
+            position: rank for rank, position in enumerate(local_event_order, start=1)
         }
     passage_scores: dict[int, float] = {}
     agreement_scores: dict[int, float] = {}
@@ -1195,16 +1310,12 @@ def hierarchical_hybrid_search_run(
         score = semantic_weight / (RRF_CONSTANT + semantic_rank)
         if lexical_rank is not None:
             score += lexical_weight / (RRF_CONSTANT + lexical_rank)
-            agreement_scores[position] = 1.0 / (
-                RRF_CONSTANT + max(semantic_rank, lexical_rank)
-            )
+            agreement_scores[position] = 1.0 / (RRF_CONSTANT + max(semantic_rank, lexical_rank))
         else:
             agreement_scores[position] = 0.0
         lexical_evidence_rank = local_lexical_evidence_ranks.get(position)
         if lexical_evidence_rank is not None:
-            score += lexical_evidence_weight / (
-                RRF_CONSTANT + lexical_evidence_rank
-            )
+            score += lexical_evidence_weight / (RRF_CONSTANT + lexical_evidence_rank)
         event_rank = local_event_ranks.get(position)
         if event_rank is not None:
             score += event_weight / (RRF_CONSTANT + event_rank)
@@ -1243,7 +1354,11 @@ def hierarchical_hybrid_search_run(
     for chapter_id in chapter_order[:chapter_candidates]:
         ordered = sorted(
             positions_by_chapter[chapter_id],
-            key=lambda position: (-final_scores[position], position),
+            key=lambda position: (
+                not lexical_ranking.exact_phrase[position],
+                -final_scores[position],
+                position,
+            ),
         )
         for rank, position in enumerate(ordered, start=1):
             within_chapter_ranks[index.chunks[position].id] = rank
@@ -1259,7 +1374,11 @@ def hierarchical_hybrid_search_run(
     if retention_mode == "global":
         globally_ordered = sorted(
             passage_positions,
-            key=lambda position: (-final_scores[position], position),
+            key=lambda position: (
+                not lexical_ranking.exact_phrase[position],
+                -final_scores[position],
+                position,
+            ),
         )
         retained = _select_non_overlapping_passages(
             index,
@@ -1268,7 +1387,12 @@ def hierarchical_hybrid_search_run(
         )
 
     ordered_retained = sorted(
-        retained, key=lambda position: (-final_scores[position], position)
+        retained,
+        key=lambda position: (
+            not lexical_ranking.exact_phrase[position],
+            -final_scores[position],
+            position,
+        ),
     )
     reranker_scores_by_position: dict[int, float] = {}
     reranker_fusion_scores: dict[int, float] = {}
@@ -1300,19 +1424,15 @@ def hierarchical_hybrid_search_run(
         )
         if rerank_fusion_weight < 1.0:
             baseline_ranks = {
-                position: rank
-                for rank, position in enumerate(rerank_positions, start=1)
+                position: rank for rank, position in enumerate(rerank_positions, start=1)
             }
             reranker_ranks = {
-                position: rank
-                for rank, position in enumerate(reranked_prefix, start=1)
+                position: rank for rank, position in enumerate(reranked_prefix, start=1)
             }
             reranker_fusion_scores = {
                 position: (
-                    (1.0 - rerank_fusion_weight)
-                    / (RRF_CONSTANT + baseline_ranks[position])
-                    + rerank_fusion_weight
-                    / (RRF_CONSTANT + reranker_ranks[position])
+                    (1.0 - rerank_fusion_weight) / (RRF_CONSTANT + baseline_ranks[position])
+                    + rerank_fusion_weight / (RRF_CONSTANT + reranker_ranks[position])
                 )
                 for position in rerank_positions
             }
@@ -1325,6 +1445,10 @@ def hierarchical_hybrid_search_run(
                 ),
             )
         ordered_retained = reranked_prefix + ordered_retained[rerank_count:]
+    ordered_retained = sorted(
+        ordered_retained,
+        key=lambda position: not lexical_ranking.exact_phrase[position],
+    )
     ordered_retained = ordered_retained[:top]
     chapter_word_cache: dict[str, list[str]] = {}
     results: list[SearchResult] = []
@@ -1356,27 +1480,19 @@ def hierarchical_hybrid_search_run(
                     "semantic_score": float(semantic_scores[position]),
                     "lexical_rank": local_lexical_ranks.get(position),
                     "lexical_score": float(lexical_scores[position]),
+                    "base_lexical_score": float(lexical_ranking.base[position]),
+                    "exact_phrase_match": bool(lexical_ranking.exact_phrase[position]),
                     "lexical_evidence_weight": lexical_evidence_weight,
-                    "lexical_evidence_rank": local_lexical_evidence_ranks.get(
-                        position
-                    ),
-                    "lexical_evidence_score": float(
-                        lexical_evidence.score[position]
-                    ),
-                    "term_coverage_score": float(
-                        lexical_evidence.coverage[position]
-                    ),
-                    "term_proximity_score": float(
-                        lexical_evidence.proximity[position]
-                    ),
+                    "lexical_evidence_rank": local_lexical_evidence_ranks.get(position),
+                    "lexical_evidence_score": float(lexical_evidence.score[position]),
+                    "term_coverage_score": float(lexical_evidence.coverage[position]),
+                    "term_proximity_score": float(lexical_evidence.proximity[position]),
                     "phrase_score": float(lexical_evidence.phrase[position]),
                     "retention_mode": retention_mode,
                     "event_weight": event_weight,
                     "event_rank": local_event_ranks.get(position),
                     "event_score": (
-                        float(event_scores[position])
-                        if event_scores is not None
-                        else None
+                        float(event_scores[position]) if event_scores is not None else None
                     ),
                     "passage_score": passage_scores[position],
                     "neighbor_score": neighbor_scores[position],
@@ -1431,7 +1547,7 @@ def search_index(
     *,
     mode: str = "semantic",
     top: int = 10,
-    pov: str | None = None,
+    pov: PovFilter = None,
     book: str | None = None,
     semantic_weight: float = 0.5,
     candidate_pool: int = DEFAULT_CANDIDATE_POOL,
@@ -1467,9 +1583,7 @@ def search_index(
     if event_weight and mode != "hybrid":
         raise WeirwoodError("--event-weight currently requires --mode hybrid")
     if lexical_evidence_weight and mode != "hybrid":
-        raise WeirwoodError(
-            "--lexical-evidence-weight currently requires --mode hybrid"
-        )
+        raise WeirwoodError("--lexical-evidence-weight currently requires --mode hybrid")
     if hierarchical:
         if mode != "hybrid":
             raise WeirwoodError("--hierarchical currently requires --mode hybrid")
@@ -1575,7 +1689,7 @@ def similar_chunks(
     chunk_id: str,
     *,
     top: int = 10,
-    pov: str | None = None,
+    pov: PovFilter = None,
     book: str | None = None,
 ) -> list[SearchResult]:
     positions = {chunk.id: position for position, chunk in enumerate(index.chunks)}

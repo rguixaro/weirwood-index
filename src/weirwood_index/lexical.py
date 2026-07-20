@@ -46,15 +46,69 @@ QUERY_STOPWORDS = frozenset(
 )
 
 
+@dataclass(frozen=True)
+class LexicalMatchSpan:
+    start: int
+    end: int
+
+
+def _normalized_token(token: str) -> str:
+    if token.endswith("'s") and len(token) > 2:
+        return token[:-2]
+    return token
+
+
 def tokenize(text: str) -> tuple[str, ...]:
     """Tokenize for exact-term retrieval without stemming names into unrelated words."""
     normalized = text.casefold().replace("’", "'")
-    tokens: list[str] = []
-    for token in TOKEN_PATTERN.findall(normalized):
-        if token.endswith("'s") and len(token) > 2:
-            token = token[:-2]
-        tokens.append(token)
-    return tuple(tokens)
+    return tuple(_normalized_token(token) for token in TOKEN_PATTERN.findall(normalized))
+
+
+def best_query_span(text: str, query: str) -> LexicalMatchSpan | None:
+    """Locate the tightest text span containing the query terms that are present."""
+    query_tokens = tokenize(query)
+    if not query_tokens:
+        return None
+    normalized = text.casefold().replace("’", "'")
+    matches = list(TOKEN_PATTERN.finditer(normalized))
+    document_tokens = tuple(_normalized_token(match.group()) for match in matches)
+
+    width = len(query_tokens)
+    for start in range(len(document_tokens) - width + 1):
+        if document_tokens[start : start + width] == query_tokens:
+            return LexicalMatchSpan(matches[start].start(), matches[start + width - 1].end())
+
+    meaningful_query_tokens = {
+        token for token in query_tokens if token not in QUERY_STOPWORDS
+    }
+    matched_terms = meaningful_query_tokens.intersection(document_tokens)
+    if not matched_terms:
+        return None
+    occurrences = [
+        (position, token)
+        for position, token in enumerate(document_tokens)
+        if token in matched_terms
+    ]
+    counts: Counter[str] = Counter()
+    covered = 0
+    left = 0
+    best: LexicalMatchSpan | None = None
+    for right_position, right_term in occurrences:
+        counts[right_term] += 1
+        if counts[right_term] == 1:
+            covered += 1
+        while covered == len(matched_terms):
+            left_position, left_term = occurrences[left]
+            candidate = LexicalMatchSpan(
+                matches[left_position].start(), matches[right_position].end()
+            )
+            if best is None or candidate.end - candidate.start < best.end - best.start:
+                best = candidate
+            counts[left_term] -= 1
+            if counts[left_term] == 0:
+                covered -= 1
+            left += 1
+    return best
 
 
 @dataclass(frozen=True)
@@ -91,9 +145,7 @@ class BM25Index:
         document_count = len(texts)
         average_length = float(lengths.mean()) if document_count else 0.0
         idf = {
-            term: math.log1p(
-                (document_count - frequency + 0.5) / (frequency + 0.5)
-            )
+            term: math.log1p((document_count - frequency + 0.5) / (frequency + 0.5))
             for term, frequency in document_frequencies.items()
         }
         return cls(
@@ -115,18 +167,45 @@ class BM25Index:
             if idf is None:
                 continue
             for position, term_frequency in self.postings[term]:
-                length_ratio = (
-                    float(self.document_lengths[position]) / self.average_document_length
-                )
-                denominator = term_frequency + self.k1 * (
-                    1.0 - self.b + self.b * length_ratio
-                )
+                length_ratio = float(self.document_lengths[position]) / self.average_document_length
+                denominator = term_frequency + self.k1 * (1.0 - self.b + self.b * length_ratio)
                 scores[position] += (
-                    query_frequency
-                    * idf
-                    * (term_frequency * (self.k1 + 1.0) / denominator)
+                    query_frequency * idf * (term_frequency * (self.k1 + 1.0) / denominator)
                 )
         return scores
+
+    def exact_phrase_matches(self, query: str) -> np.ndarray:
+        """Return passages containing the complete normalized multi-token query."""
+        matches = np.zeros(self.document_count, dtype=np.bool_)
+        query_tokens = tokenize(query)
+        if len(query_tokens) < 2:
+            return matches
+
+        width = len(query_tokens)
+        for position in self.positions_containing_all(query):
+            document = self.document_tokens[position]
+            matches[position] = any(
+                document[start : start + width] == query_tokens
+                for start in range(len(document) - width + 1)
+            )
+        return matches
+
+    def positions_containing_all(
+        self, query: str, *, exclude_stopwords: bool = False
+    ) -> list[int]:
+        terms = tuple(
+            dict.fromkeys(
+                token
+                for token in tokenize(query)
+                if not exclude_stopwords or token not in QUERY_STOPWORDS
+            )
+        )
+        if not terms or any(term not in self.postings for term in terms):
+            return []
+        positions = [
+            {position for position, _ in self.postings[term]} for term in terms
+        ]
+        return sorted(set.intersection(*positions))
 
     def evidence_scores(
         self, query: str, *, positions: list[int] | None = None
@@ -145,8 +224,7 @@ class BM25Index:
         query_sequence = tuple(
             token
             for token in tokenize(query)
-            if token not in QUERY_STOPWORDS
-            and token in self.inverse_document_frequencies
+            if token not in QUERY_STOPWORDS and token in self.inverse_document_frequencies
         )
         query_terms = tuple(dict.fromkeys(query_sequence))
         if not query_terms:
@@ -157,9 +235,7 @@ class BM25Index:
                 phrase=phrase_scores,
             )
 
-        term_weights = {
-            term: self.inverse_document_frequencies[term] for term in query_terms
-        }
+        term_weights = {term: self.inverse_document_frequencies[term] for term in query_terms}
         total_weight = sum(term_weights.values())
         query_term_set = set(query_terms)
         query_bigrams = set(zip(query_sequence, query_sequence[1:], strict=False))
@@ -176,14 +252,10 @@ class BM25Index:
             coverage_scores[position] = coverage
 
             if len(matched) >= 2:
-                proximity_scores[position] = coverage * _term_proximity(
-                    document, matched
-                )
+                proximity_scores[position] = coverage * _term_proximity(document, matched)
             if query_bigrams:
                 document_bigrams = set(zip(document, document[1:], strict=False))
-                phrase_scores[position] = len(query_bigrams & document_bigrams) / len(
-                    query_bigrams
-                )
+                phrase_scores[position] = len(query_bigrams & document_bigrams) / len(query_bigrams)
             scores[position] = (
                 0.60 * coverage_scores[position]
                 + 0.30 * proximity_scores[position]
@@ -209,9 +281,7 @@ class LexicalEvidenceScores:
 def _term_proximity(document: tuple[str, ...], matched_terms: set[str]) -> float:
     """Return matched-term density in the smallest span containing every term."""
     occurrences = [
-        (offset, token)
-        for offset, token in enumerate(document)
-        if token in matched_terms
+        (offset, token) for offset, token in enumerate(document) if token in matched_terms
     ]
     counts: Counter[str] = Counter()
     covered = 0

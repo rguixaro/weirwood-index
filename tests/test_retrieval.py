@@ -30,6 +30,19 @@ def test_search_returns_ranked_results_and_supports_pov_filter(local_index) -> N
     assert all(results[index].score >= results[index + 1].score for index in range(3))
 
 
+def test_search_supports_multiple_pov_filters(local_index) -> None:
+    results = semantic_search(
+        local_index,
+        "forgotten scene",
+        FakeEncoder(),
+        top=8,
+        pov=["BRAN", "DAENERYS"],
+    )
+
+    assert results
+    assert {result.chunk.pov for result in results} <= {"BRAN", "DAENERYS"}
+
+
 def test_search_rejects_empty_query_and_invalid_filter(local_index) -> None:
     with pytest.raises(WeirwoodError, match="must not be empty"):
         semantic_search(local_index, "   ", FakeEncoder())
