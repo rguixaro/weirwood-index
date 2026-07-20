@@ -11,6 +11,8 @@ __pycache__/
 
 # The book text and all derived passages must remain local.
 data/raw/
+data/epub/
+data/txt/
 data/indexes/
 
 # Model downloads and generated benchmark reports are local artifacts.

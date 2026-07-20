@@ -460,3 +460,18 @@ def test_representative_targets_match_their_base_benchmarks() -> None:
     for case in representative:
         base_id = case.id.removeprefix("representative-")
         assert case.expected_passages == targets_by_id[base_id]
+
+
+def test_five_book_smoke_benchmark_loads() -> None:
+    root = Path(__file__).parents[1]
+
+    benchmark = load_benchmark(root / "evaluation" / "five-book-smoke.dev.json")
+
+    assert benchmark.name == "asos-affc-adwd-chapter-smoke-development"
+    assert benchmark.status == "draft"
+    assert len(benchmark) == 9
+    assert {book_id for book_id, _digest in benchmark.source_hashes} == {
+        "asos",
+        "affc",
+        "adwd",
+    }

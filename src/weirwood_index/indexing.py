@@ -16,7 +16,7 @@ from weirwood_index.chunking import ChunkProfile, chunk_corpus
 from weirwood_index.corpus import parse_corpus, source_sha256
 from weirwood_index.embedding import Encoder
 from weirwood_index.events import EVENT_INDEX_VERSION, EventRecord, build_event_records
-from weirwood_index.models import Chunk, IndexValidationError, WeirwoodError
+from weirwood_index.models import Chunk, IndexValidationError, Paragraph, WeirwoodError
 from weirwood_index.narrative import (
     MAX_SENTENCE_VIEWS,
     NARRATIVE_VIEW_NAMES,
@@ -34,9 +34,10 @@ from weirwood_index.scenes import (
     map_chunks_to_scene_windows,
 )
 
-INDEX_FORMAT_VERSION = 2
-SUPPORTED_INDEX_FORMATS = {1, INDEX_FORMAT_VERSION}
+INDEX_FORMAT_VERSION = 3
+SUPPORTED_INDEX_FORMATS = {1, 2, INDEX_FORMAT_VERSION}
 REQUIRED_ARTIFACTS = ("chunks.jsonl", "embeddings.npy", "manifest.json")
+PARAGRAPH_ARTIFACT = "paragraphs.jsonl"
 NARRATIVE_ARTIFACTS = ("narrative_views.jsonl", "narrative_embeddings.npz")
 SCENE_WINDOW_ARTIFACTS = ("scene_windows.jsonl", "scene_embeddings.npy")
 EVENT_ARTIFACTS = ("event_records.jsonl",)
@@ -73,6 +74,7 @@ class LoadedIndex:
     chunks: tuple[Chunk, ...]
     embeddings: np.ndarray
     manifest: dict[str, Any]
+    paragraphs: tuple[Paragraph, ...] = ()
     narrative_views: tuple[NarrativeView, ...] = ()
     narrative_embeddings: dict[str, np.ndarray] | None = None
     narrative_masks: dict[str, np.ndarray] | None = None
@@ -584,6 +586,75 @@ def enrich_event_records(
     )
 
 
+def _load_paragraphs(
+    index_path: Path,
+    chunks: tuple[Chunk, ...],
+    config: Any,
+) -> tuple[Paragraph, ...]:
+    if not isinstance(config, dict) or config.get("artifact") != PARAGRAPH_ARTIFACT:
+        raise IndexValidationError(
+            "paragraph metadata is invalid or unsupported. Rebuild the index."
+        )
+    path = index_path / PARAGRAPH_ARTIFACT
+    if not path.is_file():
+        raise IndexValidationError(
+            f"index is incomplete; missing {PARAGRAPH_ARTIFACT}. Rebuild the index."
+        )
+    loaded: list[Paragraph] = []
+    try:
+        with path.open(encoding="utf-8") as handle:
+            for line_number, line in enumerate(handle, start=1):
+                if not line.strip():
+                    raise IndexValidationError(
+                        f"empty paragraph record at line {line_number}"
+                    )
+                loaded.append(Paragraph.from_dict(json.loads(line)))
+    except json.JSONDecodeError as exc:
+        raise IndexValidationError(
+            f"invalid {PARAGRAPH_ARTIFACT}: {exc}. Rebuild the index."
+        ) from exc
+    if config.get("count") != len(loaded):
+        raise IndexValidationError(
+            "paragraph count does not match the manifest. Rebuild the index."
+        )
+    if len({paragraph.id for paragraph in loaded}) != len(loaded):
+        raise IndexValidationError("paragraph IDs are not unique. Rebuild the index.")
+
+    chapter_word_counts: dict[str, int] = {}
+    for chunk in chunks:
+        chapter_word_counts[chunk.chapter_id] = max(
+            chapter_word_counts.get(chunk.chapter_id, 0), chunk.word_end
+        )
+    by_chapter: dict[str, list[Paragraph]] = {}
+    for paragraph in loaded:
+        by_chapter.setdefault(paragraph.chapter_id, []).append(paragraph)
+    if set(by_chapter) != set(chapter_word_counts):
+        raise IndexValidationError(
+            "paragraph chapters do not match indexed chapters. Rebuild the index."
+        )
+    for chapter_id, paragraphs in by_chapter.items():
+        expected_start = 0
+        for expected_ordinal, paragraph in enumerate(paragraphs, start=1):
+            if paragraph.ordinal != expected_ordinal:
+                raise IndexValidationError(
+                    f"paragraph ordinals are invalid in {chapter_id}. Rebuild the index."
+                )
+            if paragraph.word_start != expected_start:
+                raise IndexValidationError(
+                    f"paragraph offsets have a gap in {chapter_id}. Rebuild the index."
+                )
+            if paragraph.word_end - paragraph.word_start != len(paragraph.text.split()):
+                raise IndexValidationError(
+                    f"paragraph text does not match offsets in {chapter_id}. Rebuild the index."
+                )
+            expected_start = paragraph.word_end
+        if expected_start != chapter_word_counts[chapter_id]:
+            raise IndexValidationError(
+                f"paragraphs do not cover {chapter_id}. Rebuild the index."
+            )
+    return tuple(loaded)
+
+
 def build_index(
     *,
     source: str | Path | Sequence[str | Path],
@@ -657,6 +728,16 @@ def build_index(
         with (temp / "chunks.jsonl").open("w", encoding="utf-8", newline="\n") as handle:
             for chunk in chunks:
                 handle.write(json.dumps(chunk.to_dict(), ensure_ascii=True, sort_keys=True) + "\n")
+        with (temp / PARAGRAPH_ARTIFACT).open(
+            "w", encoding="utf-8", newline="\n"
+        ) as handle:
+            for paragraph in corpus.paragraphs:
+                handle.write(
+                    json.dumps(
+                        paragraph.to_dict(), ensure_ascii=True, sort_keys=True
+                    )
+                    + "\n"
+                )
         np.save(temp / "embeddings.npy", vectors, allow_pickle=False)
         if narrative_views:
             with (temp / "narrative_views.jsonl").open(
@@ -684,6 +765,7 @@ def build_index(
                 "path": os.path.relpath(item.path, destination),
                 "path_base": "index",
                 "sha256": item.sha256,
+                "source_format": item.source_format,
             }
             for item in corpus_sources
         ]
@@ -717,6 +799,15 @@ def build_index(
             },
             "vector_dimensions": int(vectors.shape[1]),
             "chunk_count": len(chunks),
+            "paragraphs": {
+                "artifact": PARAGRAPH_ARTIFACT,
+                "count": len(corpus.paragraphs),
+                "source_fidelity": (
+                    "epub"
+                    if all(item.source_format == "epub" for item in corpus.sources)
+                    else "blank-line-derived"
+                ),
+            },
             "embedding_seconds": round(elapsed, 6),
         }
         if narrative_views:
@@ -797,6 +888,15 @@ def load_index(path: str | Path, *, verify_source: bool = True) -> LoadedIndex:
     if len({chunk.id for chunk in chunks}) != len(chunks):
         raise IndexValidationError("chunk IDs are not unique. Rebuild the index.")
 
+    loaded_chunks = tuple(chunks)
+    paragraphs: tuple[Paragraph, ...] = ()
+    if manifest["format_version"] >= 3:
+        paragraphs = _load_paragraphs(
+            index_path,
+            loaded_chunks,
+            manifest.get("paragraphs"),
+        )
+
     try:
         vectors = np.load(index_path / "embeddings.npy", allow_pickle=False)
     except (OSError, ValueError) as exc:
@@ -862,7 +962,6 @@ def load_index(path: str | Path, *, verify_source: bool = True) -> LoadedIndex:
     scene_embeddings: np.ndarray | None = None
     chunk_scene_positions: tuple[tuple[int, ...], ...] = ()
     scene_config = manifest.get("scene_windows")
-    loaded_chunks = tuple(chunks)
     if scene_config is not None:
         (
             scene_windows,
@@ -892,6 +991,7 @@ def load_index(path: str | Path, *, verify_source: bool = True) -> LoadedIndex:
         chunks=loaded_chunks,
         embeddings=vectors,
         manifest=manifest,
+        paragraphs=paragraphs,
         narrative_views=narrative_views,
         narrative_embeddings=narrative_embeddings,
         narrative_masks=narrative_masks,

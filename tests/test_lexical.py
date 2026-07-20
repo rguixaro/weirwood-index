@@ -6,12 +6,13 @@ import numpy as np
 import pytest
 
 from weirwood_index.indexing import LoadedIndex
-from weirwood_index.lexical import BM25Index, tokenize
+from weirwood_index.lexical import BM25Index, best_query_span, tokenize
 from weirwood_index.models import Chunk, WeirwoodError
 from weirwood_index.retrieval import (
     hierarchical_hybrid_search_run,
     hybrid_search,
     lexical_search,
+    lexical_search_page,
     semantic_search,
 )
 
@@ -32,7 +33,15 @@ class FixedEncoder:
 
 
 def _chunk(
-    chunk_id: str, chapter_id: str, chapter_sequence: int, text: str, ordinal: int = 1
+    chunk_id: str,
+    chapter_id: str,
+    chapter_sequence: int,
+    text: str,
+    ordinal: int = 1,
+    *,
+    book_id: str = "agot",
+    book_title: str = "A Game of Thrones",
+    book_sequence: int = 1,
 ) -> Chunk:
     return Chunk(
         id=chunk_id,
@@ -45,6 +54,9 @@ def _chunk(
         word_start=(ordinal - 1) * 100,
         word_end=(ordinal - 1) * 100 + len(text.split()),
         text=text,
+        book_id=book_id,
+        book_title=book_title,
+        book_sequence=book_sequence,
     )
 
 
@@ -56,9 +68,7 @@ def retrieval_index() -> LoadedIndex:
         _chunk("fire-1", "fire", 3, "Daenerys enters a funeral pyre of fire"),
         _chunk("gold-2", "gold", 1, "The golden king wears a crown", ordinal=2),
     )
-    embeddings = np.asarray(
-        [[0.0, 1.0], [1.0, 0.0], [0.8, 0.6], [-1.0, 0.0]], dtype=np.float32
-    )
+    embeddings = np.asarray([[0.0, 1.0], [1.0, 0.0], [0.8, 0.6], [-1.0, 0.0]], dtype=np.float32)
     return LoadedIndex(Path("index"), chunks, embeddings, {})
 
 
@@ -66,19 +76,155 @@ def test_tokenize_normalizes_case_curly_apostrophes_and_possessives() -> None:
     assert tokenize("The KING’S crown") == ("the", "king", "crown")
 
 
+def test_best_query_span_prefers_the_contiguous_query_terms() -> None:
+    text = "dance lessons came first, before he said Dance with me then."
+
+    span = best_query_span(text, "dance with me then")
+
+    assert span is not None
+    assert text[span.start : span.end] == "Dance with me then"
+
+
+def test_best_query_span_ignores_stopwords_for_partial_matches() -> None:
+    text = "The guards waited beside still water."
+
+    span = best_query_span(text, "the missing dance water")
+
+    assert span is not None
+    assert text[span.start : span.end] == "water"
+
+
+def test_exact_phrase_matching_normalizes_case_and_punctuation() -> None:
+    lexical = BM25Index.from_texts(
+        [
+            "Ser Waymar said, “Dance with me then.”",
+            "dance first, then come with me",
+        ]
+    )
+
+    assert lexical.exact_phrase_matches("DANCE WITH ME THEN").tolist() == [
+        True,
+        False,
+    ]
+
+
 def test_bm25_ranks_distinctive_terms_first(retrieval_index) -> None:
     lexical = BM25Index.from_chunks(retrieval_index.chunks)
 
-    results = lexical_search(
-        retrieval_index, "Viserys molten gold", lexical_index=lexical, top=3
-    )
+    results = lexical_search(retrieval_index, "Viserys molten gold", lexical_index=lexical, top=3)
 
     assert results[0].chunk.id == "gold-1"
-    assert results[0].retrieval == {
-        "mode": "lexical",
-        "lexical_rank": 1,
-        "lexical_score": results[0].score,
-    }
+    assert results[0].retrieval["mode"] == "lexical"
+    assert results[0].retrieval["lexical_rank"] == 1
+    assert results[0].retrieval["lexical_score"] == results[0].score
+    assert results[0].retrieval["exact_phrase_match"] is False
+
+
+def test_lexical_search_prioritizes_exact_phrase_then_compact_coverage() -> None:
+    chunks = (
+        _chunk(
+            "exact",
+            "prologue",
+            1,
+            "Ser Waymar met him bravely. “Dance with me then.”",
+        ),
+        _chunk(
+            "compact",
+            "training",
+            2,
+            "Dance with me now and then leave quietly.",
+        ),
+        _chunk(
+            "repeated",
+            "lessons",
+            3,
+            "Dance dance dance dance while you watch me.",
+        ),
+        _chunk(
+            "second-book",
+            "feast",
+            1,
+            "Then dance again with swords and call for me to dance.",
+            book_id="acok",
+            book_title="A Clash of Kings",
+            book_sequence=2,
+        ),
+    )
+    index = LoadedIndex(
+        Path("index"),
+        chunks,
+        np.asarray(
+            [[-1.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 0.0]],
+            dtype=np.float32,
+        ),
+        {},
+    )
+
+    all_books = lexical_search(index, "dance with me then", top=4)
+    agot_only = lexical_search(index, "dance with me then", top=3, book="agot")
+
+    assert [result.chunk.id for result in all_books[:2]] == ["exact", "compact"]
+    assert agot_only[0].chunk.id == "exact"
+    assert all_books[0].retrieval["exact_phrase_match"] is True
+    assert all_books[1].retrieval["exact_phrase_match"] is False
+
+
+def test_exact_phrase_overrides_semantic_ranking_in_hybrid_modes() -> None:
+    chunks = (
+        _chunk(
+            "exact",
+            "prologue",
+            1,
+            "Ser Waymar met him bravely. “Dance with me then.”",
+        ),
+        _chunk("semantic-1", "first", 2, "Dance lessons continued all day."),
+        _chunk("semantic-2", "second", 3, "Come with me after the dance."),
+    )
+    embeddings = np.asarray([[-1.0, 0.0], [1.0, 0.0], [1.0, 0.0]], dtype=np.float32)
+    index = LoadedIndex(Path("index"), chunks, embeddings, {})
+
+    hybrid = hybrid_search(
+        index,
+        "dance with me then",
+        FixedEncoder(),
+        top=3,
+        candidate_pool=3,
+    )
+    hierarchical = hierarchical_hybrid_search_run(
+        index,
+        "dance with me then",
+        FixedEncoder(),
+        top=1,
+        chapter_candidates=1,
+        passages_per_chapter=1,
+        passage_candidate_pool=3,
+    )
+
+    assert hybrid[0].chunk.id == "exact"
+    assert hybrid[0].retrieval["exact_phrase_match"] is True
+    assert hierarchical.results[0].chunk.id == "exact"
+    assert hierarchical.results[0].retrieval["exact_phrase_match"] is True
+
+
+def test_lexical_search_page_returns_global_ranks_and_total(retrieval_index) -> None:
+    first = lexical_search_page(
+        retrieval_index,
+        "gold crown king viserys molten",
+        page=1,
+        page_size=1,
+    )
+    second = lexical_search_page(
+        retrieval_index,
+        "gold crown king viserys molten",
+        page=2,
+        page_size=1,
+    )
+
+    assert first.total_results == second.total_results == 2
+    assert first.book_counts == second.book_counts == {"agot": 2}
+    assert first.results[0].rank == 1
+    assert second.results[0].rank == 2
+    assert first.results[0].chunk.id != second.results[0].chunk.id
 
 
 def test_lexical_evidence_rewards_complete_compact_term_matches() -> None:
@@ -171,9 +317,7 @@ def test_semantic_search_validates_context_vector_weight(retrieval_index) -> Non
 
 
 def test_context_vector_promotes_without_diluting_focus_scores(retrieval_index) -> None:
-    contexts = np.asarray(
-        [[1.0, 0.0], [1.0, 0.0], [0.8, 0.6], [-1.0, 0.0]], dtype=np.float32
-    )
+    contexts = np.asarray([[1.0, 0.0], [1.0, 0.0], [0.8, 0.6], [-1.0, 0.0]], dtype=np.float32)
     index = LoadedIndex(
         Path("index"),
         retrieval_index.chunks,
@@ -267,7 +411,8 @@ def test_hierarchical_search_shortlists_chapters_and_returns_context() -> None:
     )
 
     assert reranked.results[0].retrieval["mode"] == "hierarchical-hybrid-rerank"
-    assert reranked.results[0].retrieval["reranker_score"] == 3.0
+    assert reranked.results[0].chunk.id == "second-2"
+    assert reranked.results[0].retrieval["exact_phrase_match"] is True
 
     baseline_fused = hierarchical_hybrid_search_run(
         index,
