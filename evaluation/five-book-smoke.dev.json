@@ -1,0 +1,97 @@
+{
+  "schema_version": 2,
+  "name": "asos-affc-adwd-chapter-smoke-development",
+  "split": "development",
+  "status": "draft",
+  "corpus": {
+    "sources": [
+      {
+        "book_id": "asos",
+        "source_sha256": "890cf1f9015e39b30a1d24fba9bfbbcd1dcabbb80331fc33c1e6615726b72ef6"
+      },
+      {
+        "book_id": "affc",
+        "source_sha256": "bddf62b99c4128fe964bf185077932db7d32634d49bec342ad649f34c6236367"
+      },
+      {
+        "book_id": "adwd",
+        "source_sha256": "8d2ca6626d56b01b43dce3a2ca0b43bb10f49c62fdacc93f6a923593be09d8e9"
+      }
+    ],
+    "word_offsets": "zero-based, chapter-relative, end-exclusive"
+  },
+  "cases": [
+    {
+      "id": "asos-sam-dragonglass-other",
+      "query": "Sam kills an Other with a dragonglass dagger in the snow",
+      "expected_chapter_ids": ["asos-019-samwell-1"],
+      "category": "half-remembered-scene",
+      "rationale": "Samwell uses an obsidian dagger against an Other.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "asos-jaime-loses-hand",
+      "query": "Jaime's sword hand is cut off by the Brave Companions",
+      "expected_chapter_ids": ["asos-022-jaime-3"],
+      "category": "half-remembered-scene",
+      "rationale": "Jaime is maimed while held by Vargo Hoat's men.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "asos-red-wedding-music",
+      "query": "Catelyn recognizes the Rains of Castamere during the wedding feast",
+      "expected_chapter_ids": ["asos-052-catelyn-7"],
+      "category": "half-remembered-scene",
+      "rationale": "The music signals the attack at the Red Wedding.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "affc-kingsmoot",
+      "query": "Aeron presides over the kingsmoot where the ironborn choose a king",
+      "expected_chapter_ids": ["affc-020-aeron-2"],
+      "category": "half-remembered-scene",
+      "rationale": "The Drowned Man chapter contains the kingsmoot.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "affc-brienne-no-chance",
+      "query": "Brienne chooses to fight at the inn despite having no chance",
+      "expected_chapter_ids": ["affc-038-brienne-7"],
+      "category": "half-remembered-scene",
+      "rationale": "Brienne defends the children at the crossroads inn.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "affc-cersei-faith-arrest",
+      "query": "The Faith arrests Cersei and imprisons her beneath the sept",
+      "expected_chapter_ids": ["affc-044-cersei-10"],
+      "category": "half-remembered-scene",
+      "rationale": "Cersei's plan against Margaery ends with her own imprisonment.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "adwd-north-remembers",
+      "query": "Wyman Manderly tells Davos the north remembers and reveals Rickon survived",
+      "expected_chapter_ids": ["adwd-030-davos-4"],
+      "category": "half-remembered-scene",
+      "rationale": "Manderly secretly declares his loyalty and sends Davos after Rickon.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "adwd-reader-thousand-lives",
+      "query": "Bran is told that a reader lives a thousand lives before dying",
+      "expected_chapter_ids": ["adwd-035-bran-3"],
+      "category": "paraphrased-quotation",
+      "rationale": "Jojen contrasts a reader's many lives with one life for a nonreader.",
+      "verification": { "status": "draft" }
+    },
+    {
+      "id": "adwd-daenerys-drogon-pit",
+      "query": "Daenerys escapes the fighting pit by climbing onto Drogon's back",
+      "expected_chapter_ids": ["adwd-053-daenerys-9"],
+      "category": "half-remembered-scene",
+      "rationale": "Drogon carries Daenerys away from Daznak's Pit.",
+      "verification": { "status": "draft" }
+    }
+  ]
+}

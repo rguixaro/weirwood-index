@@ -7,7 +7,7 @@ import unicodedata
 import zipfile
 from collections import Counter
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -50,6 +50,91 @@ ACOK_EXPECTED_POV_COUNTS = {
     "THEON": 6,
     "DAENERYS": 5,
 }
+ASOS_EXPECTED_POV_COUNTS = {
+    "PROLOGUE": 1,
+    "JAIME": 9,
+    "CATELYN": 7,
+    "ARYA": 13,
+    "TYRION": 11,
+    "DAVOS": 6,
+    "SANSA": 7,
+    "JON": 12,
+    "DAENERYS": 6,
+    "BRAN": 4,
+    "SAMWELL": 5,
+    "EPILOGUE": 1,
+}
+AFFC_EXPECTED_POV_COUNTS = {
+    "PROLOGUE": 1,
+    "AERON": 2,
+    "AREO": 1,
+    "CERSEI": 10,
+    "BRIENNE": 8,
+    "SAMWELL": 5,
+    "ARYA": 3,
+    "JAIME": 7,
+    "SANSA": 3,
+    "ASHA": 1,
+    "ARYS": 1,
+    "VICTARION": 2,
+    "ARIANNE": 2,
+}
+AFFC_HEADING_ALIASES = {
+    "THE PROPHET": "AERON",
+    "THE CAPTAIN OF GUARDS": "AREO",
+    "THE KRAKEN’S DAUGHTER": "ASHA",
+    "THE SOILED KNIGHT": "ARYS",
+    "THE IRON CAPTAIN": "VICTARION",
+    "THE DROWNED MAN": "AERON",
+    "THE QUEENMAKER": "ARIANNE",
+    "ALAYNE": "SANSA",
+    "THE REAVER": "VICTARION",
+    "CAT OF THE CANALS": "ARYA",
+    "THE PRINCESS IN THE TOWER": "ARIANNE",
+}
+ADWD_EXPECTED_POV_COUNTS = {
+    "PROLOGUE": 1,
+    "TYRION": 12,
+    "DAENERYS": 10,
+    "JON": 13,
+    "BRAN": 3,
+    "QUENTYN": 4,
+    "DAVOS": 4,
+    "THEON": 7,
+    "JON CONNINGTON": 2,
+    "ASHA": 3,
+    "MELISANDRE": 1,
+    "AREO": 1,
+    "ARYA": 2,
+    "JAIME": 1,
+    "CERSEI": 2,
+    "BARRISTAN": 4,
+    "VICTARION": 2,
+    "EPILOGUE": 1,
+}
+ADWD_HEADING_ALIASES = {
+    "THE MERCHANT’S MAN": "QUENTYN",
+    "REEK": "THEON",
+    "THE LOST LORD": "JON CONNINGTON",
+    "THE WINDBLOWN": "QUENTYN",
+    "THE WAYWARD BRIDE": "ASHA",
+    "THE PRINCE OF WINTERFELL": "THEON",
+    "THE WATCHER": "AREO",
+    "THE TURNCLOAK": "THEON",
+    "THE KING’S PRIZE": "ASHA",
+    "THE BLIND GIRL": "ARYA",
+    "A GHOST IN WINTERFELL": "THEON",
+    "THE QUEENSGUARD": "BARRISTAN",
+    "THE IRON SUITOR": "VICTARION",
+    "THE DISCARDED KNIGHT": "BARRISTAN",
+    "THE SPURNED SUITOR": "QUENTYN",
+    "THE GRIFFIN REBORN": "JON CONNINGTON",
+    "THE SACRIFICE": "ASHA",
+    "THE UGLY LITTLE GIRL": "ARYA",
+    "THE KINGBREAKER": "BARRISTAN",
+    "THE DRAGONTAMER": "QUENTYN",
+    "THE QUEEN’S HAND": "BARRISTAN",
+}
 PAGE_MARKER = re.compile(r"^Page\s+\d+$")
 CHAPTER_MARKER = re.compile(r"^CHAPTER\s+\d+$")
 # Sixteen observed scanner headers are corrupt variants of "A GAME OF THRONES <page>".
@@ -69,6 +154,7 @@ class BookSpec:
     stop_heading: str | None = None
     epub_title_term: str = ""
     epub_content_markers: tuple[str, ...] = ()
+    heading_aliases: dict[str, str] = field(default_factory=dict)
 
     @property
     def expected_chapters(self) -> int:
@@ -106,6 +192,53 @@ BOOK_SPECS = {
             "a blue flower grew from a chink in a wall of ice",
         ),
     ),
+    "A Storm Of Swords": BookSpec(
+        id="asos",
+        title="A Storm of Swords",
+        sequence=3,
+        metadata=(
+            "A Storm Of Swords",
+            "Book Three of A Song of Ice and Fire",
+            "By George R.R. Martin",
+        ),
+        expected_pov_counts=ASOS_EXPECTED_POV_COUNTS,
+        heading_corrections={},
+        stop_heading="APPENDIX",
+        epub_title_term="storm of swords",
+        epub_content_markers=("merrett frey",),
+    ),
+    "A Feast for Crows": BookSpec(
+        id="affc",
+        title="A Feast for Crows",
+        sequence=4,
+        metadata=(
+            "A Feast for Crows",
+            "Book Four of A song of Ice and Fire",
+            "By George R. R. Martin",
+        ),
+        expected_pov_counts=AFFC_EXPECTED_POV_COUNTS,
+        heading_corrections={},
+        stop_heading="APPENDIX",
+        epub_title_term="feast for crows",
+        epub_content_markers=("glass candle",),
+        heading_aliases=AFFC_HEADING_ALIASES,
+    ),
+    "A Dance with Dragons": BookSpec(
+        id="adwd",
+        title="A Dance with Dragons",
+        sequence=5,
+        metadata=(
+            "A Dance with Dragons",
+            "Book Five of A song of Ice and Fire",
+            "By George R. R. Martin",
+        ),
+        expected_pov_counts=ADWD_EXPECTED_POV_COUNTS,
+        heading_corrections={},
+        stop_heading="APPENDIX",
+        epub_title_term="dance with dragons",
+        epub_content_markers=("dragons plant no trees",),
+        heading_aliases=ADWD_HEADING_ALIASES,
+    ),
 }
 
 
@@ -128,7 +261,7 @@ def _roman(number: int) -> str:
 
 
 def _chapter_title(pov: str, ordinal: int) -> str:
-    return "PROLOGUE" if pov == "PROLOGUE" else f"{pov} {_roman(ordinal)}"
+    return pov if pov in {"PROLOGUE", "EPILOGUE"} else f"{pov} {_roman(ordinal)}"
 
 
 def _paragraph_records(
@@ -162,14 +295,16 @@ def _build_chapter(
     pov: str,
     pov_ordinal: int,
     paragraphs: Sequence[str],
+    title: str | None = None,
 ) -> tuple[Chapter, tuple[Paragraph, ...]]:
-    slug = "prologue" if pov == "PROLOGUE" else f"{pov.lower()}-{pov_ordinal}"
+    pov_slug = re.sub(r"[^a-z0-9]+", "-", pov.casefold()).strip("-")
+    slug = "prologue" if pov == "PROLOGUE" else f"{pov_slug}-{pov_ordinal}"
     chapter = Chapter(
         id=f"{spec.id}-{sequence:03d}-{slug}",
         sequence=sequence,
         pov=pov,
         pov_ordinal=pov_ordinal,
-        title=_chapter_title(pov, pov_ordinal),
+        title=title or _chapter_title(pov, pov_ordinal),
         text="\n\n".join(paragraphs),
         book_id=spec.id,
         book_title=spec.title,
@@ -282,9 +417,14 @@ def _parse_text_book(
 
     counts = Counter[str]()
     counts["title_author_lines_removed"] = 3
-    headings = set(spec.expected_pov_counts) | set(spec.heading_corrections)
-    chapter_parts: list[tuple[str, list[str]]] = []
+    headings = (
+        set(spec.expected_pov_counts)
+        | set(spec.heading_corrections)
+        | set(spec.heading_aliases)
+    )
+    chapter_parts: list[tuple[str, str | None, list[str]]] = []
     active_pov: str | None = None
+    active_title: str | None = None
     active_paragraphs: list[list[str]] = []
     active_lines: list[str] = []
 
@@ -298,7 +438,11 @@ def _parse_text_book(
         if active_pov is not None:
             finish_paragraph()
             chapter_parts.append(
-                (active_pov, [" ".join(paragraph) for paragraph in active_paragraphs])
+                (
+                    active_pov,
+                    active_title,
+                    [" ".join(paragraph) for paragraph in active_paragraphs],
+                )
             )
 
     for original_line in lines[3:]:
@@ -325,7 +469,8 @@ def _parse_text_book(
             corrected = spec.heading_corrections.get(line, line)
             if corrected != line:
                 counts[f"{line.casefold()}_headings_corrected"] += 1
-            active_pov = corrected
+            active_pov = spec.heading_aliases.get(corrected, corrected)
+            active_title = corrected if corrected in spec.heading_aliases else None
             active_paragraphs = []
             active_lines = []
             continue
@@ -340,7 +485,7 @@ def _parse_text_book(
     pov_ordinals: Counter[str] = Counter()
     chapters: list[Chapter] = []
     paragraphs: list[Paragraph] = []
-    for sequence, (pov, prose_lines) in enumerate(chapter_parts, start=1):
+    for sequence, (pov, title, prose_lines) in enumerate(chapter_parts, start=1):
         if not prose_lines:
             raise CorpusValidationError(
                 f"{spec.id} chapter {sequence} ({pov}) contains no prose"
@@ -353,6 +498,7 @@ def _parse_text_book(
             pov=pov,
             pov_ordinal=ordinal,
             paragraphs=[" ".join(paragraph.split()) for paragraph in prose_lines],
+            title=title,
         )
         chapters.append(chapter)
         paragraphs.extend(chapter_paragraphs)
@@ -480,8 +626,8 @@ def _parse_epub_book(
         if not spine:
             raise CorpusValidationError("EPUB package contains no reading-order spine")
 
-        headings = set(spec.expected_pov_counts)
-        chapter_parts: list[tuple[str, list[str]]] = []
+        headings = set(spec.expected_pov_counts) | set(spec.heading_aliases)
+        chapter_parts: list[tuple[str, str, list[str]]] = []
         for item_id in spine:
             href, media_type = manifest.get(item_id, ("", ""))
             if "html" not in media_type:
@@ -537,7 +683,13 @@ def _parse_epub_book(
                     f"{spec.id} chapter {len(chapter_parts) + 1} contains a "
                     f"{largest_paragraph}-word paragraph; paragraph boundaries appear lost"
                 )
-            chapter_parts.append((chapter_heading, prose))
+            chapter_parts.append(
+                (
+                    spec.heading_aliases.get(chapter_heading, chapter_heading),
+                    chapter_heading,
+                    prose,
+                )
+            )
             if len(chapter_parts) == spec.expected_chapters:
                 break
     finally:
@@ -546,7 +698,7 @@ def _parse_epub_book(
     pov_ordinals: Counter[str] = Counter()
     chapters: list[Chapter] = []
     paragraphs: list[Paragraph] = []
-    for sequence, (pov, prose) in enumerate(chapter_parts, start=1):
+    for sequence, (pov, source_heading, prose) in enumerate(chapter_parts, start=1):
         pov_ordinals[pov] += 1
         chapter, chapter_paragraphs = _build_chapter(
             spec,
@@ -554,6 +706,9 @@ def _parse_epub_book(
             pov=pov,
             pov_ordinal=pov_ordinals[pov],
             paragraphs=prose,
+            title=(
+                source_heading if source_heading in spec.heading_aliases else None
+            ),
         )
         chapters.append(chapter)
         paragraphs.extend(chapter_paragraphs)

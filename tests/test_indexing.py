@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
 import pytest
 
 from weirwood_index.chunking import PROFILES
+from weirwood_index.corpus import (
+    ADWD_EXPECTED_POV_COUNTS,
+    ADWD_HEADING_ALIASES,
+    AFFC_EXPECTED_POV_COUNTS,
+    AFFC_HEADING_ALIASES,
+    ASOS_EXPECTED_POV_COUNTS,
+)
 from weirwood_index.events import load_event_parser
 from weirwood_index.indexing import (
     build_context_embeddings,
@@ -17,7 +25,11 @@ from weirwood_index.indexing import (
 )
 from weirwood_index.models import Chunk, IndexValidationError, WeirwoodError
 
-from .helpers import FakeEncoder, write_valid_acok_source, write_valid_source
+from .helpers import (
+    FakeEncoder,
+    write_valid_epub_source,
+    write_valid_source,
+)
 
 
 def test_build_writes_ordered_normalized_artifacts(tmp_path) -> None:
@@ -131,23 +143,82 @@ def test_build_rejects_chunk_that_tokenizer_would_truncate(tmp_path) -> None:
         )
 
 
-def test_build_and_load_multi_book_index(tmp_path) -> None:
-    agot = write_valid_source(tmp_path, words_per_chapter=40)
-    acok = write_valid_acok_source(tmp_path, words_per_chapter=40)
+def _headings_for_counts(
+    counts: dict[str, int], aliases: dict[str, str]
+) -> list[str]:
+    represented = Counter(aliases.values())
+    return list(aliases) + [
+        pov
+        for pov, count in counts.items()
+        for _ in range(count - represented[pov])
+    ]
+
+
+def test_build_and_load_five_book_index(tmp_path) -> None:
+    sources = [
+        write_valid_epub_source(tmp_path, book_id="agot"),
+        write_valid_epub_source(tmp_path, book_id="acok"),
+        write_valid_epub_source(
+            tmp_path,
+            book_id="asos",
+            title_override="A Storm of Swords",
+            headings_override=_headings_for_counts(ASOS_EXPECTED_POV_COUNTS, {}),
+            required_marker="merrett frey",
+        ),
+        write_valid_epub_source(
+            tmp_path,
+            book_id="affc",
+            title_override="A Feast for Crows",
+            headings_override=_headings_for_counts(
+                AFFC_EXPECTED_POV_COUNTS, AFFC_HEADING_ALIASES
+            ),
+            required_marker="glass candle",
+        ),
+        write_valid_epub_source(
+            tmp_path,
+            book_id="adwd",
+            title_override="A Dance with Dragons",
+            headings_override=_headings_for_counts(
+                ADWD_EXPECTED_POV_COUNTS, ADWD_HEADING_ALIASES
+            ),
+            required_marker="dragons plant no trees",
+        ),
+    ]
 
     built = build_index(
-        source=[agot, acok],
+        source=sources,
         profile=PROFILES["short"],
         encoder=FakeEncoder(),
         output_root=tmp_path / "indexes",
     )
     loaded = load_index(built.path)
 
-    assert {chunk.book_id for chunk in loaded.chunks} == {"agot", "acok"}
+    assert {chunk.book_id for chunk in loaded.chunks} == {
+        "agot",
+        "acok",
+        "asos",
+        "affc",
+        "adwd",
+    }
     assert [record["book_id"] for record in loaded.manifest["source"]["sources"]] == [
         "agot",
         "acok",
+        "asos",
+        "affc",
+        "adwd",
     ]
+    assert any(
+        chunk.book_id == "affc"
+        and chunk.chapter_title == "THE PROPHET"
+        and chunk.pov == "AERON"
+        for chunk in loaded.chunks
+    )
+    assert any(
+        chunk.book_id == "adwd"
+        and chunk.chapter_title == "REEK"
+        and chunk.pov == "THEON"
+        for chunk in loaded.chunks
+    )
 
 
 def test_build_and_load_narrative_view_index(tmp_path) -> None:

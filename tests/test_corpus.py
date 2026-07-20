@@ -4,7 +4,15 @@ from collections import Counter
 
 import pytest
 
-from weirwood_index.corpus import EXPECTED_POV_COUNTS, parse_corpus
+from weirwood_index.corpus import (
+    ADWD_EXPECTED_POV_COUNTS,
+    ADWD_HEADING_ALIASES,
+    AFFC_EXPECTED_POV_COUNTS,
+    AFFC_HEADING_ALIASES,
+    ASOS_EXPECTED_POV_COUNTS,
+    EXPECTED_POV_COUNTS,
+    parse_corpus,
+)
 from weirwood_index.models import CorpusValidationError
 
 from .helpers import (
@@ -95,6 +103,83 @@ def test_parser_preserves_epub_paragraphs_and_stable_offsets(tmp_path) -> None:
     )
 
 
+def _synthetic_headings(
+    counts: dict[str, int], aliases: dict[str, str]
+) -> list[str]:
+    headings = list(aliases)
+    represented = Counter(aliases.values())
+    for pov, count in counts.items():
+        headings.extend([pov] * (count - represented[pov]))
+    return headings
+
+
+def test_parser_combines_all_five_main_novels_and_maps_alias_povs(tmp_path) -> None:
+    sources = [
+        write_valid_epub_source(tmp_path, book_id="agot"),
+        write_valid_epub_source(tmp_path, book_id="acok"),
+        write_valid_epub_source(
+            tmp_path,
+            book_id="asos",
+            title_override="A Storm of Swords",
+            headings_override=_synthetic_headings(ASOS_EXPECTED_POV_COUNTS, {}),
+            required_marker="merrett frey",
+        ),
+        write_valid_epub_source(
+            tmp_path,
+            book_id="affc",
+            title_override="A Feast for Crows",
+            headings_override=_synthetic_headings(
+                AFFC_EXPECTED_POV_COUNTS, AFFC_HEADING_ALIASES
+            ),
+            required_marker="glass candle",
+        ),
+        write_valid_epub_source(
+            tmp_path,
+            book_id="adwd",
+            title_override="A Dance with Dragons",
+            headings_override=_synthetic_headings(
+                ADWD_EXPECTED_POV_COUNTS, ADWD_HEADING_ALIASES
+            ),
+            required_marker="dragons plant no trees",
+        ),
+    ]
+
+    corpus = parse_corpus(reversed(sources))
+
+    assert [source.book_id for source in corpus.sources] == [
+        "agot",
+        "acok",
+        "asos",
+        "affc",
+        "adwd",
+    ]
+    assert len(corpus.chapters) == 344
+    assert len(corpus.paragraphs) == 3440
+    assert Counter(
+        chapter.pov for chapter in corpus.chapters if chapter.book_id == "asos"
+    ) == ASOS_EXPECTED_POV_COUNTS
+    assert Counter(
+        chapter.pov for chapter in corpus.chapters if chapter.book_id == "affc"
+    ) == AFFC_EXPECTED_POV_COUNTS
+    assert Counter(
+        chapter.pov for chapter in corpus.chapters if chapter.book_id == "adwd"
+    ) == ADWD_EXPECTED_POV_COUNTS
+
+    prophet = next(chapter for chapter in corpus.chapters if chapter.title == "THE PROPHET")
+    reek = next(chapter for chapter in corpus.chapters if chapter.title == "REEK")
+    queens_hand = next(
+        chapter for chapter in corpus.chapters if chapter.title == "THE QUEEN’S HAND"
+    )
+    assert (prophet.book_id, prophet.pov) == ("affc", "AERON")
+    assert (reek.book_id, reek.pov) == ("adwd", "THEON")
+    assert (queens_hand.book_id, queens_hand.pov) == ("adwd", "BARRISTAN")
+    assert any(
+        chapter.id.endswith("jon-connington-1") and chapter.pov == "JON CONNINGTON"
+        for chapter in corpus.chapters
+    )
+    assert any(chapter.title == "EPILOGUE" for chapter in corpus.chapters)
+
+
 def test_parser_rejects_epub_with_collapsed_chapter_paragraphs(tmp_path) -> None:
     source = write_valid_epub_source(
         tmp_path,
@@ -110,6 +195,22 @@ def test_parser_rejects_structurally_valid_but_incomplete_epub(tmp_path) -> None
     source = write_valid_epub_source(
         tmp_path,
         book_id="acok",
+        include_required_content=False,
+    )
+
+    with pytest.raises(CorpusValidationError, match="EPUB content appears incomplete"):
+        parse_corpus(source)
+
+
+def test_parser_rejects_incomplete_new_novel_epub(tmp_path) -> None:
+    source = write_valid_epub_source(
+        tmp_path,
+        book_id="affc",
+        title_override="A Feast for Crows",
+        headings_override=_synthetic_headings(
+            AFFC_EXPECTED_POV_COUNTS, AFFC_HEADING_ALIASES
+        ),
+        required_marker="glass candle",
         include_required_content=False,
     )
 

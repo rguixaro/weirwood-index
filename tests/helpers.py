@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import zipfile
+from collections.abc import Sequence
 from pathlib import Path
 
 import numpy as np
@@ -147,8 +148,14 @@ def write_valid_epub_source(
     book_id: str,
     collapsed_paragraphs: bool = False,
     include_required_content: bool = True,
+    title_override: str | None = None,
+    headings_override: Sequence[str] | None = None,
+    required_marker: str | None = None,
 ) -> Path:
-    if book_id == "agot":
+    if title_override is not None and headings_override is not None:
+        title = title_override
+        headings = list(headings_override)
+    elif book_id == "agot":
         title = "A Game of Thrones"
         headings = [
             "DAENERYS" if heading == "DAFNERYS" else heading
@@ -179,6 +186,12 @@ def write_valid_epub_source(
         ]
         if book_id == "acok" and sequence == 49 and include_required_content:
             paragraphs[-1] += " A blue flower grew from a chink in a wall of ice."
+        if (
+            required_marker
+            and sequence == len(headings)
+            and include_required_content
+        ):
+            paragraphs[-1] += f" {required_marker}."
         if collapsed_paragraphs:
             paragraphs = [" ".join(paragraphs)]
         paragraph_markup = "".join(f"<p>{text}</p>" for text in paragraphs)
