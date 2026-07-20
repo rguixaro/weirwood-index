@@ -6,6 +6,7 @@ import math
 import re
 import time
 from collections import Counter, OrderedDict
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -50,6 +51,31 @@ class SearchCatalog:
     books: tuple[CatalogBook, ...]
 
 
+def catalog_from_chunks(chunks: Sequence[Chunk]) -> SearchCatalog:
+    books: dict[str, tuple[int, str, set[str]]] = {}
+    for chunk in chunks:
+        if chunk.book_id not in books:
+            books[chunk.book_id] = (
+                chunk.book_sequence,
+                chunk.book_title,
+                set(),
+            )
+        books[chunk.book_id][2].add(chunk.pov)
+    return SearchCatalog(
+        books=tuple(
+            CatalogBook(
+                book_id=book_id,
+                book_title=book_title,
+                book_sequence=book_sequence,
+                povs=tuple(sorted(povs)),
+            )
+            for book_id, (book_sequence, book_title, povs) in sorted(
+                books.items(), key=lambda item: item[1][0]
+            )
+        )
+    )
+
+
 @dataclass(frozen=True)
 class SearchPayload:
     results: list[dict[str, Any]]
@@ -60,7 +86,7 @@ class SearchPayload:
 
 
 @dataclass(frozen=True)
-class LexicalPreview:
+class PassagePreview:
     text: str
     word_start: int
     word_end: int
@@ -155,31 +181,56 @@ def _focus_word_end(chunk: Chunk, excerpt_chars: int) -> int:
     return chunk.word_start + max(1, selected)
 
 
-def lexical_preview(
+def passage_preview(
     chunk: Chunk,
     query: str,
     *,
     excerpt_chars: int,
-) -> LexicalPreview | None:
+) -> PassagePreview | None:
     match = best_query_span(chunk.text, query)
-    if match is None:
-        return None
     word_spans = list(re.finditer(r"\S+", chunk.text))
     if not word_spans:
         return None
-    match_start = next(
-        position for position, span in enumerate(word_spans) if span.end() > match.start
-    )
-    match_end = 1 + max(
-        position for position, span in enumerate(word_spans) if span.start() < match.end
-    )
-    start = match_start
-    end = match_end
+
+    if match is None:
+        focus_start = len(chunk.text) // 2
+        focus_end = focus_start
+        center = min(
+            range(len(word_spans)),
+            key=lambda position: abs(
+                (word_spans[position].start() + word_spans[position].end()) // 2
+                - focus_start
+            ),
+        )
+        start = center
+        end = center + 1
+    else:
+        focus_start = match.start
+        focus_end = match.end
+        start = next(
+            position for position, span in enumerate(word_spans) if span.end() > match.start
+        )
+        end = 1 + max(
+            position for position, span in enumerate(word_spans) if span.start() < match.end
+        )
+
+    if word_spans[end - 1].end() - word_spans[start].start() > excerpt_chars:
+        focus_midpoint = (focus_start + focus_end) // 2
+        center = min(
+            range(start, end),
+            key=lambda position: abs(
+                (word_spans[position].start() + word_spans[position].end()) // 2
+                - focus_midpoint
+            ),
+        )
+        start = center
+        end = center + 1
+
     while True:
         current_start = word_spans[start].start()
         current_end = word_spans[end - 1].end()
-        left_padding = match.start - current_start
-        right_padding = current_end - match.end
+        left_padding = max(0, focus_start - current_start)
+        right_padding = max(0, current_end - focus_end)
         candidates: list[tuple[int, str]] = []
         if start > 0:
             left_length = current_end - word_spans[start - 1].start()
@@ -198,7 +249,7 @@ def lexical_preview(
             end += 1
 
     words = chunk.text.split()
-    return LexicalPreview(
+    return PassagePreview(
         text=chunk.text[word_spans[start].start() : word_spans[end - 1].end()],
         word_start=chunk.word_start + start,
         word_end=chunk.word_start + end,
@@ -316,28 +367,7 @@ class WeirwoodSearchRuntime:
             chapter_id: tuple(paragraphs)
             for chapter_id, paragraphs in paragraphs_by_chapter.items()
         }
-        books: dict[str, tuple[int, str, set[str]]] = {}
-        for chunk in index.chunks:
-            if chunk.book_id not in books:
-                books[chunk.book_id] = (
-                    chunk.book_sequence,
-                    chunk.book_title,
-                    set(),
-                )
-            books[chunk.book_id][2].add(chunk.pov)
-        self._catalog = SearchCatalog(
-            books=tuple(
-                CatalogBook(
-                    book_id=book_id,
-                    book_title=book_title,
-                    book_sequence=book_sequence,
-                    povs=tuple(sorted(povs)),
-                )
-                for book_id, (book_sequence, book_title, povs) in sorted(
-                    books.items(), key=lambda item: item[1][0]
-                )
-            )
-        )
+        self._catalog = catalog_from_chunks(index.chunks)
         logger.info(
             "index_loaded book_count=%d chunk_count=%d paragraph_count=%d duration_ms=%.3f",
             len(self._catalog.books),
@@ -434,13 +464,11 @@ class WeirwoodSearchRuntime:
         payloads: list[dict[str, Any]] = []
         for result in results:
             payload = result.to_dict(excerpt_chars=self.settings.excerpt_chars)
-            preview = None
-            if request.mode == "lexical":
-                preview = lexical_preview(
-                    result.chunk,
-                    request.query,
-                    excerpt_chars=self.settings.excerpt_chars,
-                )
+            preview = passage_preview(
+                result.chunk,
+                request.query,
+                excerpt_chars=self.settings.excerpt_chars,
+            )
             if preview is None:
                 before, after = neighboring_context(
                     result.chunk, self._chunks_by_location

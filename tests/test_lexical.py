@@ -85,6 +85,15 @@ def test_best_query_span_prefers_the_contiguous_query_terms() -> None:
     assert text[span.start : span.end] == "Dance with me then"
 
 
+def test_best_query_span_ignores_stopwords_for_partial_matches() -> None:
+    text = "The guards waited beside still water."
+
+    span = best_query_span(text, "the missing dance water")
+
+    assert span is not None
+    assert text[span.start : span.end] == "water"
+
+
 def test_exact_phrase_matching_normalizes_case_and_punctuation() -> None:
     lexical = BM25Index.from_texts(
         [

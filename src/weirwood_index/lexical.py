@@ -78,7 +78,10 @@ def best_query_span(text: str, query: str) -> LexicalMatchSpan | None:
         if document_tokens[start : start + width] == query_tokens:
             return LexicalMatchSpan(matches[start].start(), matches[start + width - 1].end())
 
-    matched_terms = set(query_tokens).intersection(document_tokens)
+    meaningful_query_tokens = {
+        token for token in query_tokens if token not in QUERY_STOPWORDS
+    }
+    matched_terms = meaningful_query_tokens.intersection(document_tokens)
     if not matched_terms:
         return None
     occurrences = [
