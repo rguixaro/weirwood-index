@@ -1,0 +1,82 @@
+name: weirwood-index
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/compose/Dockerfile
+    image: weirwood-index-api:local
+    restart: unless-stopped
+    init: true
+    environment:
+      WEIRWOOD_ORIGIN_TOKEN: ${WEIRWOOD_ORIGIN_TOKEN:?Set WEIRWOOD_ORIGIN_TOKEN}
+      WEIRWOOD_INDEX_PATH: /app/runtime/index
+      WEIRWOOD_MODEL_CACHE: /app/runtime/models
+      WEIRWOOD_VERIFY_SOURCE: "false"
+      WEIRWOOD_ENCODER_BATCH_SIZE: "1"
+      WEIRWOOD_SEARCH_CACHE_SIZE: "128"
+      WEIRWOOD_EXCERPT_CHARS: "360"
+      WEIRWOOD_MAX_QUEUED_SEARCHES: "1"
+    volumes:
+      - ../runtime:/app/runtime:ro
+    expose:
+      - "8000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /home/weirwood/.cache:size=128m,uid=10001,gid=10001,mode=0700
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - /app/.venv/bin/python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=30).read()
+      interval: 30s
+      timeout: 35s
+      retries: 3
+      start_period: 120s
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    networks:
+      - backend
+
+  caddy:
+    image: caddy:2.11.4-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
