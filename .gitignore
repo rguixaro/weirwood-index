@@ -18,3 +18,13 @@ data/indexes/
 # Model downloads and generated benchmark reports are local artifacts.
 models/
 evaluation/reports/
+
+# The production runtime contains private corpus-derived artifacts.
+deploy/runtime/*
+!deploy/runtime/README.md
+!deploy/runtime/index/
+deploy/runtime/index/*
+!deploy/runtime/index/.gitkeep
+!deploy/runtime/models/
+deploy/runtime/models/*
+!deploy/runtime/models/.gitkeep
