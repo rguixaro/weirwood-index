@@ -41,7 +41,7 @@ export function App() {
           />
           <p className="mx-auto mt-0 mb-0 max-w-190 text-[0.86rem] leading-[1.7] text-muted-ink">
             <b>Weirwood Index</b> is an independent, open-source reference tool. It is
-            not affiliated with or endorsed by George R. R. Martin, or any other rights holder. Names and titles are
+            not affiliated with or endorsed by George R. R. Martin or any other rights holder. Names and titles are
             used only to identify the referenced works.
           </p>
         </footer>
