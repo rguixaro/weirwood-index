@@ -10,14 +10,14 @@
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 
-  --color-parchment: #f1e6cf;
-  --color-parchment-deep: #e4d2af;
-  --color-parchment-light: #fbf4e4;
+  --color-parchment: #f0e8d8;
+  --color-parchment-deep: #ded1ba;
+  --color-parchment-light: #faf5ea;
   --color-ink: #382f2b;
   --color-muted-ink: #6d5e55;
-  --color-oxblood: #365347;
-  --color-oxblood-dark: #243b32;
-  --color-walnut: #233129;
+  --color-oxblood: #7a2632;
+  --color-oxblood-dark: #4d1820;
+  --color-walnut: #211719;
   --color-rule: #a58355;
   --color-rule-soft: rgb(165 131 85 / 42%);
 }
@@ -45,10 +45,10 @@
     background:
       radial-gradient(
         ellipse at 50% 0,
-        rgb(78 105 88 / 22%),
+        rgb(122 38 50 / 18%),
         transparent 48rem
       ),
-      linear-gradient(90deg, #19231e 0%, #2a3a31 50%, #19231e 100%);
+      linear-gradient(90deg, #1b1315 0%, #2a181c 50%, #1b1315 100%);
     background-attachment: fixed;
   }
 
@@ -65,7 +65,7 @@
       ),
       linear-gradient(
         0deg,
-        rgb(241 230 207 / 2.5%) 0 1px,
+        rgb(240 232 216 / 2.5%) 0 1px,
         transparent 1px 100%
       );
     content: "";
@@ -100,9 +100,9 @@
   height: min(82vh, 50rem);
   background: linear-gradient(
     90deg,
-    #17231d 0 16%,
-    #2d493c 16% 84%,
-    #17231d 84% 100%
+    #3a151b 0 16%,
+    #7a2632 16% 84%,
+    #3a151b 84% 100%
   );
   border: 1px solid rgb(165 131 85 / 55%);
   box-shadow:

@@ -28,7 +28,7 @@ export function SearchResults({
       className="results-region mt-[clamp(3rem,7vw,5rem)]"
     >
       {results.error ? (
-        <div className="search-notice is-error border border-[rgba(54,83,71,0.36)] border-l-[3px] border-l-oxblood bg-[rgba(54,83,71,0.06)] px-[1.4rem] py-5 text-oxblood-dark">
+        <div className="search-notice is-error border border-[rgba(122,38,50,0.36)] border-l-[3px] border-l-oxblood bg-[rgba(122,38,50,0.06)] px-[1.4rem] py-5 text-oxblood-dark">
           <p className="notice-title m-0 mb-[0.2rem] font-display text-[1.2rem] leading-[1.55] font-semibold text-oxblood-dark">
             Search unavailable
           </p>

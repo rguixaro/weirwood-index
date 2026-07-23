@@ -82,7 +82,7 @@ export function SearchForm({
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
                   placeholder="Daenerys dreams of a blue flower growing from the Wall"
-                  className="h-[4.1rem] w-full rounded-[2px] border border-[#8d744f] bg-[rgba(255,251,241,0.6)] px-[1.15rem] text-ink shadow-[inset_0_1px_4px_rgba(86,54,26,0.07)] outline-none transition-[border-color,box-shadow,background] duration-[160ms] placeholder:text-muted-ink focus:border-oxblood focus:bg-parchment-light focus:shadow-[inset_0_1px_4px_rgba(86,54,26,0.07),0_0_0_3px_rgba(54,83,71,0.14)] max-[620px]:h-[3.8rem]"
+                  className="h-[4.1rem] w-full rounded-[2px] border border-[#8d744f] bg-[rgba(255,251,241,0.6)] px-[1.15rem] text-ink shadow-[inset_0_1px_4px_rgba(86,54,26,0.07)] outline-none transition-[border-color,box-shadow,background] duration-[160ms] placeholder:text-muted-ink focus:border-oxblood focus:bg-parchment-light focus:shadow-[inset_0_1px_4px_rgba(86,54,26,0.07),0_0_0_3px_rgba(122,38,50,0.14)] max-[620px]:h-[3.8rem]"
                 />
               </label>
             )}
@@ -100,7 +100,7 @@ export function SearchForm({
                 {isSearching ? (
                   <span
                     aria-hidden="true"
-                    className="search-spinner size-5 animate-[search-spinner_700ms_linear_infinite] rounded-full border-2 border-[rgba(241,230,207,0.42)] border-t-parchment-light motion-reduce:animate-none"
+                    className="search-spinner size-5 animate-[search-spinner_700ms_linear_infinite] rounded-full border-2 border-[rgba(240,232,216,0.42)] border-t-parchment-light motion-reduce:animate-none"
                   />
                 ) : (
                   "Search"

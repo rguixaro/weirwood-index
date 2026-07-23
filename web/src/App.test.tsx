@@ -151,6 +151,54 @@ describe("App", () => {
     expect(submit).toBeEnabled();
   });
 
+  it("links to the public source repository", () => {
+    mockCatalog();
+    renderApp();
+
+    const repositoryLink = screen.getByRole("link", {
+      name: "View Weirwood Index source on GitHub"
+    });
+    expect(repositoryLink).toHaveAttribute(
+      "href",
+      "https://github.com/rguixaro/weirwood-index"
+    );
+    expect(repositoryLink).toHaveAttribute("target", "_blank");
+    expect(repositoryLink).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("provides a project email link", () => {
+    mockCatalog();
+    renderApp();
+
+    expect(
+      screen.getByRole("link", { name: "Email Weirwood Index" })
+    ).toHaveAttribute("href", "mailto:info@weirwoodindex.com");
+  });
+
+  it("shows the primary heading and unofficial project status", () => {
+    mockCatalog();
+    renderApp();
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Find the passage you half remember"
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Search A Song of Ice and Fire your way")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Search all five/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", {
+        name: "Independent, unofficial, and open source"
+      })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/not affiliated with or endorsed/i)
+    ).toBeInTheDocument();
+  });
+
   it("opens and closes the filter disclosure accessibly", () => {
     mockCatalog();
     renderApp();
