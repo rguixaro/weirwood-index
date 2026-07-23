@@ -9,6 +9,15 @@ __pycache__/
 .env.*
 !.env.example
 
+# Web build and local Worker state.
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+web/.wrangler/
+web/.dev.vars*
+!web/.dev.vars.example
+
 # The book text and all derived passages must remain local.
 data/raw/
 data/epub/
