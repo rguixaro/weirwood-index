@@ -17,7 +17,7 @@ function environment(overrides: Partial<Env> = {}): Env {
     } as unknown as Env["ASSETS"],
     HYBRID_RATE_LIMITER: limiter(),
     LEXICAL_RATE_LIMITER: limiter(),
-    GLOBAL_RATE_LIMITER: limiter(),
+    LOCATION_RATE_LIMITER: limiter(),
     API_ORIGIN: "https://api.weirwoodindex.com",
     ORIGIN_TOKEN: "origin-secret",
     TURNSTILE_SECRET_KEY: "turnstile-secret",
@@ -80,7 +80,13 @@ describe("search gateway", () => {
       key: "192.0.2.10"
     });
     expect(env.LEXICAL_RATE_LIMITER.limit).not.toHaveBeenCalled();
-    expect(env.GLOBAL_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: "search" });
+    expect(env.LOCATION_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: "search" });
+    expect(
+      (env.HYBRID_RATE_LIMITER as MockLimiter).limit.mock.invocationCallOrder[0] ?? 0
+    ).toBeLessThan(
+      (env.LOCATION_RATE_LIMITER as MockLimiter).limit.mock.invocationCallOrder[0] ??
+        0
+    );
 
     const [originUrl, originInit] = fetchMock.mock.calls[1] ?? [];
     expect(String(originUrl)).toBe("https://api.weirwoodindex.com/v1/search");
@@ -120,7 +126,7 @@ describe("search gateway", () => {
 
     expect(response.status).toBe(403);
     expect(env.HYBRID_RATE_LIMITER.limit).not.toHaveBeenCalled();
-    expect(env.GLOBAL_RATE_LIMITER.limit).not.toHaveBeenCalled();
+    expect(env.LOCATION_RATE_LIMITER.limit).not.toHaveBeenCalled();
   });
 
   it("returns a retry interval when the client limit is reached", async () => {
@@ -140,6 +146,74 @@ describe("search gateway", () => {
 
     expect(response.status).toBe(429);
     expect(response.headers.get("Retry-After")).toBe("60");
+    expect(env.LOCATION_RATE_LIMITER.limit).not.toHaveBeenCalled();
+  });
+
+  it("checks the lexical client limit before location capacity", async () => {
+    const env = environment();
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        Response.json({
+          success: true,
+          action: "search",
+          hostname: "weirwoodindex.com"
+        })
+      )
+      .mockResolvedValueOnce(
+        Response.json({
+          query: "water dance",
+          result_count: 0,
+          duration_ms: 1,
+          cached: false,
+          results: []
+        })
+      );
+
+    const response = await worker.fetch(
+      searchRequest({
+        query: "water dance",
+        mode: "lexical",
+        page: 1,
+        page_size: 20,
+        turnstileToken: "client-token"
+      }),
+      env
+    );
+
+    expect(response.status).toBe(200);
+    expect(env.LEXICAL_RATE_LIMITER.limit).toHaveBeenCalledWith({
+      key: "192.0.2.10"
+    });
+    expect(env.HYBRID_RATE_LIMITER.limit).not.toHaveBeenCalled();
+    expect(env.LOCATION_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: "search" });
+    expect(
+      (env.LEXICAL_RATE_LIMITER as MockLimiter).limit.mock.invocationCallOrder[0] ?? 0
+    ).toBeLessThan(
+      (env.LOCATION_RATE_LIMITER as MockLimiter).limit.mock.invocationCallOrder[0] ??
+        0
+    );
+  });
+
+  it("returns a retry interval when location capacity is reached", async () => {
+    const env = environment({ LOCATION_RATE_LIMITER: limiter(false) });
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({
+        success: true,
+        action: "search",
+        hostname: "weirwoodindex.com"
+      })
+    );
+
+    const response = await worker.fetch(
+      searchRequest({ query: "water dance", turnstileToken: "client-token" }),
+      env
+    );
+
+    expect(response.status).toBe(429);
+    expect(response.headers.get("Retry-After")).toBe("60");
+    expect(env.HYBRID_RATE_LIMITER.limit).toHaveBeenCalled();
+    expect(env.LOCATION_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: "search" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("forwards catalog requests with the private origin credential", async () => {
