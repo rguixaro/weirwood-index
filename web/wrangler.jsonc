@@ -14,7 +14,7 @@
   "assets": {
     "directory": "dist",
     "binding": "ASSETS",
-    "not_found_handling": "single-page-application",
+    "not_found_handling": "404-page",
     "run_worker_first": ["/api/*"]
   },
   "vars": {
@@ -40,7 +40,7 @@
       }
     },
     {
-      "name": "GLOBAL_RATE_LIMITER",
+      "name": "LOCATION_RATE_LIMITER",
       "namespace_id": "1103",
       "simple": {
         "limit": 60,

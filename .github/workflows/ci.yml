@@ -1,0 +1,201 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+  push:
+    branches:
+      - dev
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.12"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install Python
+        run: uv python install 3.12.11
+
+      - name: Install Python dependencies
+        run: uv sync --locked --dev
+
+      - name: Run Ruff
+        run: uv run ruff check src tests tools
+
+      - name: Run Python tests
+        run: uv run pytest -q -m "not integration"
+
+      - name: Check the OpenAPI contract
+        run: |
+          uv run python tools/export_openapi.py
+          git diff --exit-code -- openapi.json
+
+  web:
+    name: Web
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: web/package.json
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install web dependencies
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      - name: Check the generated API types
+        working-directory: web
+        run: |
+          pnpm api:types
+          git diff --exit-code -- src/api/schema.d.ts
+
+      - name: Run ESLint
+        working-directory: web
+        run: pnpm lint
+
+      - name: Check TypeScript
+        working-directory: web
+        run: pnpm check
+
+      - name: Run web and Worker tests
+        working-directory: web
+        run: pnpm test
+
+      - name: Build the web client
+        working-directory: web
+        run: pnpm build
+
+      - name: Validate the Worker package
+        working-directory: web
+        run: pnpm exec wrangler deploy --dry-run
+
+      - name: Install Playwright Chromium
+        working-directory: web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run browser tests
+        working-directory: web
+        run: pnpm exec playwright test --workers=1
+
+      - name: Upload failed browser test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-results-${{ github.run_attempt }}
+          path: web/test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  container:
+    name: Container
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Check for container changes
+        id: container_changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE_SHA: ${{ github.event.before }}
+        run: |
+          base_sha="$PR_BASE_SHA"
+          if [[ -z "$base_sha" ]]; then
+            base_sha="$PUSH_BASE_SHA"
+          fi
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]] \
+            || [[ -z "$base_sha" ]] \
+            || [[ "$base_sha" =~ ^0+$ ]] \
+            || ! git cat-file -e "${base_sha}^{commit}" 2>/dev/null; then
+            required=true
+          elif git diff --quiet "$base_sha" "$GITHUB_SHA" -- \
+            src \
+            pyproject.toml \
+            uv.lock \
+            deploy/compose \
+            .github/workflows/ci.yml; then
+            required=false
+          else
+            required=true
+          fi
+
+          echo "required=$required" >> "$GITHUB_OUTPUT"
+
+      - name: Validate the Compose configuration
+        if: steps.container_changes.outputs.required == 'true'
+        run: |
+          docker compose \
+            --env-file deploy/compose/.env.example \
+            -f deploy/compose/compose.yaml \
+            -f deploy/compose/compose.local.yaml \
+            config --quiet
+
+      - name: Validate the Caddy configuration
+        if: steps.container_changes.outputs.required == 'true'
+        run: |
+          docker run --rm \
+            --env API_DOMAIN=api.example.com \
+            --env ACME_EMAIL=admin@example.com \
+            --volume "$GITHUB_WORKSPACE/deploy/compose/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2.11.4-alpine \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+      - name: Set up Docker Buildx
+        if: steps.container_changes.outputs.required == 'true'
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build the API image
+        if: steps.container_changes.outputs.required == 'true'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/compose/Dockerfile
+          platforms: linux/amd64
+          push: false
+          cache-from: type=gha,scope=weirwood-api
+          cache-to: type=gha,mode=max,scope=weirwood-api

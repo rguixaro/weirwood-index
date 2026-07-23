@@ -2,7 +2,7 @@ export interface Env {
   ASSETS: Fetcher;
   HYBRID_RATE_LIMITER: RateLimit;
   LEXICAL_RATE_LIMITER: RateLimit;
-  GLOBAL_RATE_LIMITER: RateLimit;
+  LOCATION_RATE_LIMITER: RateLimit;
   API_ORIGIN: string;
   ORIGIN_TOKEN: string;
   TURNSTILE_SECRET_KEY: string;
@@ -216,11 +216,11 @@ async function enforceRateLimits(
   const clientKey = request.headers.get("CF-Connecting-IP") ?? "local-client";
   const clientLimiter =
     mode === "hybrid" ? env.HYBRID_RATE_LIMITER : env.LEXICAL_RATE_LIMITER;
-  const [client, global] = await Promise.all([
-    clientLimiter.limit({ key: clientKey }),
-    env.GLOBAL_RATE_LIMITER.limit({ key: "search" })
-  ]);
-  return client.success && global.success;
+  const client = await clientLimiter.limit({ key: clientKey });
+  if (!client.success) return false;
+
+  const location = await env.LOCATION_RATE_LIMITER.limit({ key: "search" });
+  return location.success;
 }
 
 function originResponse(response: Response): Response {
