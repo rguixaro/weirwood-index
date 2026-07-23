@@ -1,0 +1,51 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "weirwood-index",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-07-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "weirwoodindex.com",
+      "custom_domain": true
+    }
+  ],
+  "assets": {
+    "directory": "dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    "API_ORIGIN": "https://api.weirwoodindex.com",
+    "TURNSTILE_EXPECTED_HOSTNAME": "weirwoodindex.com",
+    "ORIGIN_TIMEOUT_MS": "90000"
+  },
+  "ratelimits": [
+    {
+      "name": "HYBRID_RATE_LIMITER",
+      "namespace_id": "1101",
+      "simple": {
+        "limit": 6,
+        "period": 60
+      }
+    },
+    {
+      "name": "LEXICAL_RATE_LIMITER",
+      "namespace_id": "1102",
+      "simple": {
+        "limit": 30,
+        "period": 60
+      }
+    },
+    {
+      "name": "LOCATION_RATE_LIMITER",
+      "namespace_id": "1103",
+      "simple": {
+        "limit": 60,
+        "period": 60
+      }
+    }
+  ]
+}
