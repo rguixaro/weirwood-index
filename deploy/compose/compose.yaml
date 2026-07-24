@@ -16,7 +16,7 @@ services:
       WEIRWOOD_ENCODER_BATCH_SIZE: "1"
       WEIRWOOD_SEARCH_CACHE_SIZE: "128"
       WEIRWOOD_EXCERPT_CHARS: "360"
-      WEIRWOOD_MAX_QUEUED_SEARCHES: "1"
+      WEIRWOOD_MAX_QUEUED_SEARCHES: "8"
     volumes:
       - ../runtime:/app/runtime:ro
     expose:
