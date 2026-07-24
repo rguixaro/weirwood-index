@@ -46,7 +46,7 @@ test("submits a scene search and renders the matching passage", async ({
 
   await page.goto("/");
   await page
-    .getByPlaceholder("Daenerys dreams of a blue flower growing from the Wall")
+    .getByPlaceholder("Tyrion demands a trial by combat at the Eyrie")
     .fill("blue flower at the Wall");
   await expect(page.getByRole("radio", { name: "Semantic" })).toBeChecked();
   await page.getByText("Need exact words? Try lexical search").click();
