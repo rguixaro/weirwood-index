@@ -121,7 +121,7 @@ function installSingleUseTurnstile() {
 async function enterQueryAndSubmit() {
   fireEvent.change(
     screen.getByPlaceholderText(
-      "Daenerys dreams of a blue flower growing from the Wall"
+      "Tyrion demands a trial by combat at the Eyrie"
     ),
     { target: { value: "blue flower at the Wall" } }
   );

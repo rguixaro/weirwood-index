@@ -81,7 +81,7 @@ export function SearchForm({
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
-                  placeholder="Daenerys dreams of a blue flower growing from the Wall"
+                  placeholder="Tyrion demands a trial by combat at the Eyrie"
                   className="h-[4.1rem] w-full rounded-[2px] border border-[#8d744f] bg-[rgba(255,251,241,0.6)] px-[1.15rem] text-ink shadow-[inset_0_1px_4px_rgba(86,54,26,0.07)] outline-none transition-[border-color,box-shadow,background] duration-[160ms] placeholder:text-muted-ink focus:border-oxblood focus:bg-parchment-light focus:shadow-[inset_0_1px_4px_rgba(86,54,26,0.07),0_0_0_3px_rgba(122,38,50,0.14)] max-[620px]:h-[3.8rem]"
                 />
               </label>
